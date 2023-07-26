@@ -1,23 +1,159 @@
 import "./App.css";
 import {
   BooleanParam,
+  NumberParam,
   QueryParamProvider,
   useQueryParam,
 } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Dialog } from "@headlessui/react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const WalkthroughCard = (props: { children: React.ReactNode }): JSX.Element => {
+  return (
+    <div className="rounded-3xl bg-blue-700 shadow h-full w-full max-w-xs max-h-[34rem]">
+      <div className="flex flex-col gap-y-10 h-full items-center justify-between">
+        {props.children}
+      </div>
+    </div>
+  );
+};
+
+// from https://codesandbox.io/s/framer-motion-image-gallery-pqvx3?from-embed=&file=/src/Example.tsx:522-978
+
+/**
+ * Experimenting with distilling swipe offset and velocity into a single variable, so the
+ * less distance a user has swiped, the more velocity they need to register as a swipe.
+ * Should accomodate longer swipes and short flicks without having binary checks on
+ * just distance thresholds and velocity > 0.
+ */
+const swipeConfidenceThreshold = 10000;
+const swipePower = (offset: number, velocity: number) => {
+  return Math.abs(offset) * velocity;
+};
+const variants = {
+  enter: (direction: number) => {
+    return {
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+    };
+  },
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => {
+    return {
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+    };
+  },
+};
 
 const Content = (): JSX.Element => {
   const startWalkthroughRef = useRef(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+
+  // TODO: rename this
   const [walkthroughSkipped, setWalkthroughSkipped] = useQueryParam(
     "ws",
     BooleanParam
   );
+
+  const [walkthroughStep, setWalkthroughStep] = useQueryParam(
+    "step",
+    NumberParam
+  );
+
   const handleSkip = useCallback(() => {
     setWalkthroughSkipped(true);
   }, [setWalkthroughSkipped]);
+
+  const handleStartWalkthrough = useCallback(() => {
+    setWalkthroughStep(0);
+  }, [setWalkthroughStep]);
+
+  const [direction, setDirection] = useState(0);
+
+  const moveCarousel = useCallback(
+    (newDirection: number) => {
+      if (walkthroughStep != null) {
+        const max = 3;
+        setWalkthroughStep(
+          (((walkthroughStep + newDirection) % max) + max) % max
+        );
+        setDirection(newDirection);
+        setTimeout(() => {
+          if (nextButtonRef.current) {
+            nextButtonRef.current.focus();
+          }
+        }, 100);
+      }
+    },
+    [walkthroughStep, setWalkthroughStep]
+  );
+
+  const handleNext = useCallback(() => {
+    moveCarousel(1);
+  }, [moveCarousel]);
+
+  // TODO: i18n
+  const steps = [
+    <WalkthroughCard key={0}>
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5">
+        1. Select an asset.
+      </Dialog.Title>
+
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-center">
+        <button
+          ref={nextButtonRef}
+          className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
+          onClick={handleNext}
+        >
+          <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full"></div>
+          Next
+        </button>
+      </div>
+    </WalkthroughCard>,
+
+    <WalkthroughCard key={1}>
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5">
+        2. Generate data.
+      </Dialog.Title>
+
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-center">
+        <button
+          ref={nextButtonRef}
+          className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
+          onClick={handleNext}
+        >
+          <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full"></div>
+          Next
+        </button>
+      </div>
+    </WalkthroughCard>,
+
+    <WalkthroughCard key={2}>
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5">
+        3. {/* possibly redeem */} Receive data wages.
+      </Dialog.Title>
+
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-center">
+        <button
+          ref={nextButtonRef}
+          onClick={handleSkip}
+          className="w-48 bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
+        >
+          <div className="absolute inset-0 rounded-xl bg-blue-900/[0.1] opacity-0 group-hover:opacity-75 group-active:opacity-100 h-full w-full"></div>
+          <span>Start earning data wages</span>
+        </button>
+      </div>
+    </WalkthroughCard>,
+  ];
 
   return (
     <>
@@ -27,34 +163,74 @@ const Content = (): JSX.Element => {
         </span>
 
         <Dialog
-          open={!walkthroughSkipped}
+          open={!walkthroughSkipped && walkthroughStep === undefined}
           as="div"
           className="absolute inset-10 flex justify-center items-center"
           initialFocus={startWalkthroughRef}
           onClose={handleSkip}
         >
-          <div className="rounded-3xl bg-blue-700 shadow h-full max-h-[34rem]">
-            <div className="flex flex-col gap-y-10 h-full items-center justify-between">
-              <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5 text-center">
-                Welcome to Data&nbsp;Equity&nbsp;Bank!
-              </Dialog.Title>
+          <WalkthroughCard>
+            <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5 text-center">
+              Welcome to Data&nbsp;Equity&nbsp;Bank!
+            </Dialog.Title>
 
-              <div className="flex flex-col gap-y-10 mb-10 grow justify-center">
-                <button
-                  ref={startWalkthroughRef}
-                  className="w-48 bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
-                >
-                  <div className="absolute inset-0 rounded-xl bg-blue-900/[0.1] opacity-0 group-hover:opacity-75 group-active:opacity-100 h-full w-full"></div>
-                  <span>Start Walkthrough</span>
-                </button>
+            <div className="flex flex-col gap-y-10 mb-10 grow justify-center">
+              <button
+                onClick={handleStartWalkthrough}
+                ref={startWalkthroughRef}
+                className="w-48 bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
+              >
+                <div className="absolute inset-0 rounded-xl bg-blue-900/[0.1] opacity-0 group-hover:opacity-75 group-active:opacity-100 h-full w-full"></div>
+                <span>Start Walkthrough</span>
+              </button>
 
-                <button className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group" onClick={handleSkip}>
-                  <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full"></div>
-                  Skip
-                </button>
-              </div>
+              <button
+                className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
+                onClick={handleSkip}
+              >
+                <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full"></div>
+                Skip
+              </button>
             </div>
-          </div>
+          </WalkthroughCard>
+        </Dialog>
+
+        <Dialog
+          open={!walkthroughSkipped && walkthroughStep !== undefined}
+          as="div"
+          className="absolute inset-10 flex justify-center items-center"
+          initialFocus={nextButtonRef}
+          onClose={handleSkip}
+        >
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={walkthroughStep}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={1}
+              onDragEnd={(_e, { offset, velocity }) => {
+                const swipe = swipePower(offset.x, velocity.x);
+
+                if (swipe < -swipeConfidenceThreshold) {
+                  moveCarousel(1);
+                } else if (swipe > swipeConfidenceThreshold) {
+                  moveCarousel(-1);
+                }
+              }}
+              className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-xs"
+            >
+              {walkthroughStep != null && steps[walkthroughStep]}
+            </motion.div>
+          </AnimatePresence>
         </Dialog>
       </div>
     </>
