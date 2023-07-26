@@ -126,7 +126,7 @@ const Content = (): JSX.Element => {
           ref={stepButtonRefs[0]}
           className="w-48 bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
         >
-          <div className="absolute inset-0 rounded-xl bg-blue-900/[0.1] opacity-0 group-hover:opacity-75 group-active:opacity-100 h-full w-full"></div>
+          <div className="absolute inset-0 rounded-xl bg-blue-900/[0.3] opacity-0 group-hover:opacity-25 group-active:opacity-100 h-full w-full"></div>
           <span>Start Walkthrough</span>
         </button>
 
@@ -185,7 +185,7 @@ const Content = (): JSX.Element => {
           onClick={handleSkip}
           className="w-full bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
         >
-          <div className="absolute inset-0 rounded-xl bg-blue-900/[0.1] opacity-0 group-hover:opacity-75 group-active:opacity-100 h-full w-full"></div>
+          <div className="absolute inset-0 rounded-xl bg-blue-900/[0.3] opacity-0 group-hover:opacity-25 group-active:opacity-100 h-full w-full"></div>
           <span>Start earning data wages</span>
         </button>
       </div>
