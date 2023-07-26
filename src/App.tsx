@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const WalkthroughCard = (props: { children: React.ReactNode }): JSX.Element => {
   return (
-    <div className="rounded-3xl bg-blue-700 shadow h-full w-full max-w-xs max-h-[34rem]">
+    <div className="rounded-3xl bg-blue-700 shadow-xl h-[calc(100%-5rem)] w-[calc(100%-2.5rem)] max-w-[25rem] max-h-[34rem]">
       <div className="flex flex-col gap-y-10 h-full items-center justify-between">
         {props.children}
       </div>
@@ -145,7 +145,7 @@ const Content = (): JSX.Element => {
         1. Select an asset.
       </Dialog.Title>
 
-      <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full">
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full p-5 pb-0">
         <button
           ref={stepButtonRefs[1]}
           className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
@@ -162,7 +162,7 @@ const Content = (): JSX.Element => {
         2. Generate data.
       </Dialog.Title>
 
-      <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full">
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full p-5 pb-0">
         <button
           ref={stepButtonRefs[2]}
           className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
@@ -179,7 +179,7 @@ const Content = (): JSX.Element => {
         3. {/* possibly redeem */} Receive data wages.
       </Dialog.Title>
 
-      <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full">
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full p-5 pb-0">
         <button
           ref={stepButtonRefs[3]}
           onClick={handleSkip}
@@ -204,7 +204,7 @@ const Content = (): JSX.Element => {
         <Dialog
           open={!walkthroughSkipped}
           as="div"
-          className="absolute inset-10 flex justify-center items-center overflow-hidden"
+          className="absolute inset-0 flex justify-center items-center overflow-hidden"
           initialFocus={stepButtonRefs[walkthroughStep ?? 0]}
           onClose={handleSkip}
         >
@@ -232,7 +232,7 @@ const Content = (): JSX.Element => {
                   moveCarousel(-1);
                 }
               }}
-              className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-xs h-full top-0 bottom-0 flex items-center justify-center overflow-hidden"
+              className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-[22.5rem] h-full top-0 bottom-0 max-h-full flex items-center justify-center"
             >
               {walkthroughStep == null ? steps[0] : steps[walkthroughStep]}
             </motion.div>
