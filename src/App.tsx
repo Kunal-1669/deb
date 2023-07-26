@@ -6,7 +6,7 @@ import {
   useQueryParam,
 } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 import { useCallback, useRef, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -55,9 +55,6 @@ const variants = {
 };
 
 const Content = (): JSX.Element => {
-  const startWalkthroughRef = useRef(null);
-  const nextButtonRef = useRef<HTMLButtonElement>(null);
-
   // TODO: rename this
   const [walkthroughSkipped, setWalkthroughSkipped] = useQueryParam(
     "ws",
@@ -73,61 +70,80 @@ const Content = (): JSX.Element => {
     setWalkthroughSkipped(true);
   }, [setWalkthroughSkipped]);
 
-  const handleStartWalkthrough = useCallback(() => {
-    setWalkthroughStep(0);
-  }, [setWalkthroughStep]);
-
   const [direction, setDirection] = useState(0);
 
   const moveCarousel = useCallback(
     (newDirection: number) => {
       if (walkthroughStep != null) {
-        const max = 3;
-        setWalkthroughStep(
+        const max = steps.length;
+        const newStep = 
           (((walkthroughStep + newDirection) % max) + max) % max
+        setWalkthroughStep(
+          newStep
         );
         setDirection(newDirection);
         setTimeout(() => {
-          if (nextButtonRef.current) {
-            nextButtonRef.current.focus();
+          const newStepButtonRef = stepButtonRefs[newStep]
+          if (newStepButtonRef && newStepButtonRef.current) {
+            newStepButtonRef.current.focus();
           }
-        }, 100);
+        }, 200);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [walkthroughStep, setWalkthroughStep]
   );
 
   const handleNext = useCallback(() => {
-    moveCarousel(1);
-  }, [moveCarousel]);
+    if (walkthroughStep == null) {
+      setWalkthroughStep(1);
+    } else {
+      moveCarousel(1);
+    }
+  }, [moveCarousel, setWalkthroughStep, walkthroughStep]);
+
+  const stepButtonRefs = [
+    useRef<HTMLButtonElement>(null),
+    useRef<HTMLButtonElement>(null),
+    useRef<HTMLButtonElement>(null),
+    useRef<HTMLButtonElement>(null),
+  ]
 
   // TODO: i18n
   const steps = [
     <WalkthroughCard key={0}>
-      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5">
-        1. Select an asset.
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5 text-center">
+        Welcome to Data&nbsp;Equity&nbsp;Bank!
       </Dialog.Title>
 
       <div className="flex flex-col gap-y-10 mb-10 grow justify-center">
         <button
-          ref={nextButtonRef}
-          className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
           onClick={handleNext}
+          ref={stepButtonRefs[0]}
+          className="w-48 bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
+        >
+          <div className="absolute inset-0 rounded-xl bg-blue-900/[0.1] opacity-0 group-hover:opacity-75 group-active:opacity-100 h-full w-full"></div>
+          <span>Start Walkthrough</span>
+        </button>
+
+        <button
+          className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
+          onClick={handleSkip}
         >
           <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full"></div>
-          Next
+          Skip
         </button>
       </div>
     </WalkthroughCard>,
 
     <WalkthroughCard key={1}>
       <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5">
-        2. Generate data.
+        1. Select an asset.
       </Dialog.Title>
 
-      <div className="flex flex-col gap-y-10 mb-10 grow justify-center">
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full">
         <button
-          ref={nextButtonRef}
+          ref={stepButtonRefs[1]}
           className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
           onClick={handleNext}
         >
@@ -139,14 +155,31 @@ const Content = (): JSX.Element => {
 
     <WalkthroughCard key={2}>
       <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5">
+        2. Generate data.
+      </Dialog.Title>
+
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full">
+        <button
+          ref={stepButtonRefs[2]}
+          className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
+          onClick={handleNext}
+        >
+          <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full"></div>
+          Next
+        </button>
+      </div>
+    </WalkthroughCard>,
+
+    <WalkthroughCard key={3}>
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5">
         3. {/* possibly redeem */} Receive data wages.
       </Dialog.Title>
 
-      <div className="flex flex-col gap-y-10 mb-10 grow justify-center">
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full">
         <button
-          ref={nextButtonRef}
+          ref={stepButtonRefs[3]}
           onClick={handleSkip}
-          className="w-48 bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
+          className="w-full bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
         >
           <div className="absolute inset-0 rounded-xl bg-blue-900/[0.1] opacity-0 group-hover:opacity-75 group-active:opacity-100 h-full w-full"></div>
           <span>Start earning data wages</span>
@@ -158,48 +191,17 @@ const Content = (): JSX.Element => {
   return (
     <>
       <div className="h-full relative p-2 flex items-center justify-center">
-        <span className="font-[Inter] uppercase text-bblue text-3xl text-center font-medium tracking-wider">
-          DATA EQUITY BANK
-        </span>
+        <Link to="/">
+          <span className="font-[Inter] uppercase text-bblue text-3xl text-center font-medium tracking-wider font-bold">
+            DATA EQUITY BANK
+          </span>
+        </Link>
 
         <Dialog
-          open={!walkthroughSkipped && walkthroughStep === undefined}
+          open={!walkthroughSkipped}
           as="div"
           className="absolute inset-10 flex justify-center items-center"
-          initialFocus={startWalkthroughRef}
-          onClose={handleSkip}
-        >
-          <WalkthroughCard>
-            <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5 text-center">
-              Welcome to Data&nbsp;Equity&nbsp;Bank!
-            </Dialog.Title>
-
-            <div className="flex flex-col gap-y-10 mb-10 grow justify-center">
-              <button
-                onClick={handleStartWalkthrough}
-                ref={startWalkthroughRef}
-                className="w-48 bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
-              >
-                <div className="absolute inset-0 rounded-xl bg-blue-900/[0.1] opacity-0 group-hover:opacity-75 group-active:opacity-100 h-full w-full"></div>
-                <span>Start Walkthrough</span>
-              </button>
-
-              <button
-                className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
-                onClick={handleSkip}
-              >
-                <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full"></div>
-                Skip
-              </button>
-            </div>
-          </WalkthroughCard>
-        </Dialog>
-
-        <Dialog
-          open={!walkthroughSkipped && walkthroughStep !== undefined}
-          as="div"
-          className="absolute inset-10 flex justify-center items-center"
-          initialFocus={nextButtonRef}
+          initialFocus={stepButtonRefs[walkthroughStep ?? 0]}
           onClose={handleSkip}
         >
           <AnimatePresence initial={false}>
@@ -226,9 +228,9 @@ const Content = (): JSX.Element => {
                   moveCarousel(-1);
                 }
               }}
-              className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-xs"
+              className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-xs h-full top-0 bottom-0 flex items-center justify-center"
             >
-              {walkthroughStep != null && steps[walkthroughStep]}
+              {walkthroughStep == null ? steps[0] : steps[walkthroughStep]}
             </motion.div>
           </AnimatePresence>
         </Dialog>
