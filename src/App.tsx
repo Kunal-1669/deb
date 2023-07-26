@@ -76,18 +76,15 @@ const Content = (): JSX.Element => {
     (newDirection: number) => {
       if (walkthroughStep != null) {
         const max = steps.length;
-        const newStep = 
-          (((walkthroughStep + newDirection) % max) + max) % max
-        setWalkthroughStep(
-          newStep
-        );
+        const newStep = (((walkthroughStep + newDirection) % max) + max) % max;
+        setWalkthroughStep(newStep);
         setDirection(newDirection);
         setTimeout(() => {
-          const newStepButtonRef = stepButtonRefs[newStep]
+          const newStepButtonRef = stepButtonRefs[newStep];
           if (newStepButtonRef && newStepButtonRef.current) {
             newStepButtonRef.current.focus();
           }
-        }, 200);
+        }, 100);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -97,9 +94,16 @@ const Content = (): JSX.Element => {
   const handleNext = useCallback(() => {
     if (walkthroughStep == null) {
       setWalkthroughStep(1);
+      setTimeout(() => {
+        const newStepButtonRef = stepButtonRefs[1];
+        if (newStepButtonRef && newStepButtonRef.current) {
+          newStepButtonRef.current.focus();
+        }
+      }, 100);
     } else {
       moveCarousel(1);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [moveCarousel, setWalkthroughStep, walkthroughStep]);
 
   const stepButtonRefs = [
@@ -107,7 +111,7 @@ const Content = (): JSX.Element => {
     useRef<HTMLButtonElement>(null),
     useRef<HTMLButtonElement>(null),
     useRef<HTMLButtonElement>(null),
-  ]
+  ];
 
   // TODO: i18n
   const steps = [
@@ -200,7 +204,7 @@ const Content = (): JSX.Element => {
         <Dialog
           open={!walkthroughSkipped}
           as="div"
-          className="absolute inset-10 flex justify-center items-center"
+          className="absolute inset-10 flex justify-center items-center overflow-hidden"
           initialFocus={stepButtonRefs[walkthroughStep ?? 0]}
           onClose={handleSkip}
         >
@@ -228,7 +232,7 @@ const Content = (): JSX.Element => {
                   moveCarousel(-1);
                 }
               }}
-              className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-xs h-full top-0 bottom-0 flex items-center justify-center"
+              className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-xs h-full top-0 bottom-0 flex items-center justify-center overflow-hidden"
             >
               {walkthroughStep == null ? steps[0] : steps[walkthroughStep]}
             </motion.div>
