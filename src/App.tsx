@@ -116,7 +116,7 @@ const Content = (): JSX.Element => {
   // TODO: i18n
   const steps = [
     <WalkthroughCard key={0}>
-      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5 text-center">
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2 text-center">
         Welcome to Data&nbsp;Equity&nbsp;Bank!
       </Dialog.Title>
 
@@ -141,7 +141,7 @@ const Content = (): JSX.Element => {
     </WalkthroughCard>,
 
     <WalkthroughCard key={1}>
-      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5">
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2">
         1. Select an asset.
       </Dialog.Title>
 
@@ -158,7 +158,7 @@ const Content = (): JSX.Element => {
     </WalkthroughCard>,
 
     <WalkthroughCard key={2}>
-      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5">
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2">
         2. Generate data.
       </Dialog.Title>
 
@@ -175,7 +175,7 @@ const Content = (): JSX.Element => {
     </WalkthroughCard>,
 
     <WalkthroughCard key={3}>
-      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal p-5">
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2">
         3. {/* possibly redeem */} Receive data wages.
       </Dialog.Title>
 
