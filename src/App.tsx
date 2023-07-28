@@ -12,9 +12,22 @@ import { useCallback, useRef, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 
-const WalkthroughCard = (props: { children: React.ReactNode }): JSX.Element => {
+const WalkthroughCard = (props: { children: React.ReactNode, height?: string }): JSX.Element => {
+  const { height } = props
+
+  // TODO: reduce duplication here
+  if (height == null) {
   return (
     <div className="rounded-3xl bg-blue-700 shadow-xl h-[calc(100%-5rem)] w-[calc(100%-2.5rem)] max-w-[25rem] max-h-[34rem]">
+      <div className="flex flex-col gap-y-10 h-full items-center justify-between">
+        {props.children}
+      </div>
+    </div>
+  );
+  }
+
+  return (
+    <div className="rounded-3xl bg-blue-700 shadow-xl w-[calc(100%-2.5rem)] max-w-[25rem] max-h-[34rem]">
       <div className="flex flex-col gap-y-10 h-full items-center justify-between">
         {props.children}
       </div>
@@ -57,24 +70,36 @@ const variants = {
 
 const AssetsHeader = (): JSX.Element => {
   return (
-    <div
-      style={{
-        backgroundImage:
-          "linear-gradient(to bottom, #f0f3f8, #f0f3f8, #f0f3f8, transparent)",
-      }}
-      className="w-full rounded-t-2xl px-8 pt-5 pb-14"
-    >
-      <div className="text-3xl font-bold font-[Inter] text-bdarkblue leading-none text-center">
+    <div className="w-full rounded-t-2xl py-8 flex flex-col gap-y-2">
+      <div className="text-3xl font-bold font-[Inter] text-bdarkblue leading-none tracking-wide">
         Assets
+      </div>
+
+      {/* subheading */}
+      <div className="text-md text-bblue/[0.75] font-medium">
+        Select an asset below to begin a simulation.
       </div>
     </div>
   );
 };
 
+const useSimulatorState = () => {
+  return useQueryParam("sim", StringParam);
+};
+
 const AssetPlaceholder = (): JSX.Element => {
+  const [, setSimulatorState] = useSimulatorState();
+
+  const handleClick = useCallback(() => {
+    setSimulatorState("open");
+  }, [setSimulatorState]);
+
   return (
     <>
-      <div className="rounded-lg bg-boffwhite p-2 flex gap-2 shadow-sm select-none cursor-pointer relative group">
+      <div
+        onClick={handleClick}
+        className="rounded-lg bg-boffwhite p-2 flex gap-2 shadow-sm select-none cursor-pointer relative group"
+      >
         <div className="absolute inset-0 rounded-lg bg-bblue/[0.1] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
         <div className="w-10 h-10 rounded-md bg-boffwhiteandblue"></div>
         <div className="grow flex flex-col gap-y-1.5">
@@ -83,10 +108,14 @@ const AssetPlaceholder = (): JSX.Element => {
         </div>
         <div className="self-end flex flex-col gap-y-0.5 items-end">
           <span className="text-bdarkblue font-bold text-2xl leading-none flex items-start">
-            <span style={{fontSize: '0.8em'}} className="translate-y-0.5">$</span>
+            <span style={{ fontSize: "0.8em" }} className="translate-y-0.5">
+              $
+            </span>
             <span>50</span>
           </span>
-          <span className="text-bblue/[0.75] leading-none font-light">per month</span>
+          <span className="text-bblue/[0.75] leading-none font-light">
+            per month
+          </span>
         </div>
       </div>
     </>
@@ -96,9 +125,9 @@ const AssetPlaceholder = (): JSX.Element => {
 const AssetSelection = (): JSX.Element => {
   return (
     <>
-      <div className="max-w-sm mx-auto w-full">
+      <div className="max-w-md mx-auto w-full border border-bblue/[0.5] pb-5 px-5 rounded-2xl">
         <AssetsHeader />
-        <div className="flex flex-col gap-y-2.5 mt-5">
+        <div className="flex flex-col gap-y-2.5">
           <AssetPlaceholder />
           <AssetPlaceholder />
           <AssetPlaceholder />
@@ -109,6 +138,9 @@ const AssetSelection = (): JSX.Element => {
 };
 
 const Home = (): JSX.Element => {
+  const [simulatorState] = useSimulatorState();
+  console.log(simulatorState);
+
   // TODO: rename this
   const [walkthroughSkipped, setWalkthroughSkipped] = useQueryParam(
     "ws",
@@ -248,13 +280,20 @@ const Home = (): JSX.Element => {
 
   const dragControls = useDragControls();
 
+  const [, setSimulatorState] = useSimulatorState()
+
+  const stopSimulation = useCallback(() => {
+    setSimulatorState('closed')
+  }, [setSimulatorState])
+
   return (
     <>
       <div className="h-full relative p-2 flex flex-col items-stretch justify-start bg-blue-100/[0.8] gap-y-10">
         <Link
           to="/"
-          className="font-[Inter] uppercase text-bblue text-xl sm:text-3xl text-center tracking-wider font-bold"
+          className="font-[Inter] uppercase text-bblue/[0.8] text-md text-center tracking-wider font-bold bg-boffwhite rounded-lg relative group min-h-[2rem] flex items-center justify-center"
         >
+          <div className="absolute inset-0 rounded-lg bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
           <span>DATA EQUITY BANK</span>
         </Link>
 
@@ -298,6 +337,34 @@ const Home = (): JSX.Element => {
             </motion.div>
           </AnimatePresence>
         </Dialog>
+
+        <Dialog
+          open={simulatorState === "open"}
+          as="div"
+          className="absolute inset-0 flex justify-center items-center overflow-hidden"
+          initialFocus={stepButtonRefs[walkthroughStep ?? 0]}
+          onClose={handleSkip}
+        >
+          <div className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-[22.5rem] h-full top-0 bottom-0 max-h-full flex items-center justify-center">
+            <WalkthroughCard height="auto">
+              <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2 text-center">
+                Success!
+              </Dialog.Title>
+
+              <div className="font-[Inter] max-w-xs text-blue-50 font-semibold px-5 py-10 text-center">
+                You have completed the simulation.
+              </div>
+
+      <button
+        onClick={stopSimulation}
+        className="block font-[Inter] uppercase text-boffwhite border border-boffwhite rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group cursor-pointer mb-10"
+      >
+        <div className="absolute inset-0 rounded-xl bg-boffwhite/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+        <span>Take Again</span>
+      </button>
+            </WalkthroughCard>
+          </div>
+        </Dialog>
       </div>
     </>
   );
@@ -315,9 +382,9 @@ const Signin = (): JSX.Element => {
 
       <Link
         to="/?signin=google&step=0"
-        className="block font-[Inter] uppercase text-bblue border border-bblue rounded-full px-4 py-3 text-center tracking-wider font-bold relative group"
+        className="block font-[Inter] uppercase text-bblue border border-bblue rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group"
       >
-        <div className="absolute inset-0 rounded-full bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+        <div className="absolute inset-0 rounded-xl bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
         <span>SIGN IN WITH GOOGLE</span>
       </Link>
     </div>
