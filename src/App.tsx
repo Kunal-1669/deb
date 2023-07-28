@@ -55,6 +55,59 @@ const variants = {
   },
 };
 
+const AssetsHeader = (): JSX.Element => {
+  return (
+    <div
+      style={{
+        backgroundImage:
+          "linear-gradient(to bottom, #f0f3f8, #f0f3f8, #f0f3f8, transparent)",
+      }}
+      className="w-full rounded-t-2xl px-8 pt-5 pb-14"
+    >
+      <div className="text-3xl font-bold font-[Inter] text-bdarkblue leading-none text-center">
+        Assets
+      </div>
+    </div>
+  );
+};
+
+const AssetPlaceholder = (): JSX.Element => {
+  return (
+    <>
+      <div className="rounded-lg bg-boffwhite p-2 flex gap-2 shadow-sm select-none cursor-pointer relative group">
+        <div className="absolute inset-0 rounded-lg bg-bblue/[0.1] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+        <div className="w-10 h-10 rounded-md bg-boffwhiteandblue"></div>
+        <div className="grow flex flex-col gap-y-1.5">
+          <div className="h-2 rounded-md w-[60%] bg-blue-100"></div>
+          <div className="h-2 rounded-md w-[35%] bg-blue-100/[0.75]"></div>
+        </div>
+        <div className="text-2xl font-bold leading-none self-end">
+          $
+          <span className="text-bdarkblue font-black text-3xl leading-none">
+            50
+          </span>
+          /mo
+        </div>
+      </div>
+    </>
+  );
+};
+
+const AssetSelection = (): JSX.Element => {
+  return (
+    <>
+      <div className="max-w-sm mx-auto w-full">
+        <AssetsHeader />
+        <div className="flex flex-col gap-y-2.5 mt-5">
+          <AssetPlaceholder />
+          <AssetPlaceholder />
+          <AssetPlaceholder />
+        </div>
+      </div>
+    </>
+  );
+};
+
 const Home = (): JSX.Element => {
   // TODO: rename this
   const [walkthroughSkipped, setWalkthroughSkipped] = useQueryParam(
@@ -197,12 +250,15 @@ const Home = (): JSX.Element => {
 
   return (
     <>
-      <div className="h-full relative p-2 flex items-center justify-center">
-        <Link to="/">
-          <span className="font-[Inter] uppercase text-bblue text-3xl text-center font-medium tracking-wider font-bold">
-            DATA EQUITY BANK
-          </span>
+      <div className="h-full relative p-2 flex flex-col items-stretch justify-start bg-blue-100/[0.8] gap-y-10">
+        <Link
+          to="/"
+          className="font-[Inter] uppercase text-bblue text-xl sm:text-3xl text-center tracking-wider font-bold"
+        >
+          <span>DATA EQUITY BANK</span>
         </Link>
+
+        <AssetSelection />
 
         <Dialog
           open={!walkthroughSkipped}
@@ -252,14 +308,14 @@ const Signin = (): JSX.Element => {
     <div className="h-full relative p-2 flex flex-col items-center justify-around">
       <Link
         to="/"
-        className="block font-[Inter] uppercase text-bblue text-3xl text-center font-medium tracking-wider font-bold"
+        className="block font-[Inter] uppercase text-bblue text-xl sm:text-3xl text-center tracking-wider font-bold"
       >
         DATA EQUITY BANK
       </Link>
 
       <Link
         to="/?signin=google"
-        className="block font-[Inter] uppercase text-bblue border border-bblue rounded-full px-4 py-3 text-center font-medium tracking-wider font-bold relative group"
+        className="block font-[Inter] uppercase text-bblue border border-bblue rounded-full px-4 py-3 text-center tracking-wider font-bold relative group"
       >
         <div className="absolute inset-0 rounded-full bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
         <span>SIGN IN WITH GOOGLE</span>
