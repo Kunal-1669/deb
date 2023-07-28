@@ -314,7 +314,7 @@ const Signin = (): JSX.Element => {
       </Link>
 
       <Link
-        to="/?signin=google"
+        to="/?signin=google&step=0"
         className="block font-[Inter] uppercase text-bblue border border-bblue rounded-full px-4 py-3 text-center tracking-wider font-bold relative group"
       >
         <div className="absolute inset-0 rounded-full bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
