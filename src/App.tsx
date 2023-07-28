@@ -9,7 +9,7 @@ import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
 import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 import { useCallback, useRef, useState } from "react";
 import { Dialog } from "@headlessui/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
 
 const WalkthroughCard = (props: { children: React.ReactNode }): JSX.Element => {
   return (
@@ -36,7 +36,7 @@ const swipePower = (offset: number, velocity: number) => {
 const variants = {
   enter: (direction: number) => {
     return {
-      x: direction > 0 ? 1000 : -1000,
+      x: direction > 0 ? 300 : -300,
       opacity: 0,
     };
   },
@@ -48,7 +48,7 @@ const variants = {
   exit: (direction: number) => {
     return {
       zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
+      x: direction < 0 ? 300 : -300,
       opacity: 0,
     };
   },
@@ -192,6 +192,8 @@ const Content = (): JSX.Element => {
     </WalkthroughCard>,
   ];
 
+  const dragControls = useDragControls();
+
   return (
     <>
       <div className="h-full relative p-2 flex items-center justify-center">
@@ -215,9 +217,10 @@ const Content = (): JSX.Element => {
               variants={variants}
               initial="enter"
               animate="center"
+              dragControls={dragControls}
               exit="exit"
               transition={{
-                x: { type: "spring", stiffness: 300, damping: 30 },
+                x: { type: "spring", stiffness: 350, damping: 45 },
                 opacity: { duration: 0.2 },
               }}
               drag="x"
