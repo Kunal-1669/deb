@@ -81,12 +81,12 @@ const AssetPlaceholder = (): JSX.Element => {
           <div className="h-2 rounded-md w-[60%] bg-blue-100"></div>
           <div className="h-2 rounded-md w-[35%] bg-blue-100/[0.75]"></div>
         </div>
-        <div className="text-2xl font-bold leading-none self-end">
-          $
-          <span className="text-bdarkblue font-black text-3xl leading-none">
-            50
+        <div className="self-end flex flex-col gap-y-0.5 items-end">
+          <span className="text-bdarkblue font-bold text-2xl leading-none flex items-start">
+            <span style={{fontSize: '0.8em'}} className="translate-y-0.5">$</span>
+            <span>50</span>
           </span>
-          /mo
+          <span className="text-bblue/[0.75] leading-none font-light">per month</span>
         </div>
       </div>
     </>
