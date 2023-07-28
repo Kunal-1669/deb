@@ -3,6 +3,7 @@ import {
   BooleanParam,
   NumberParam,
   QueryParamProvider,
+  StringParam,
   useQueryParam,
 } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
@@ -54,7 +55,7 @@ const variants = {
   },
 };
 
-const Content = (): JSX.Element => {
+const Home = (): JSX.Element => {
   // TODO: rename this
   const [walkthroughSkipped, setWalkthroughSkipped] = useQueryParam(
     "ws",
@@ -126,7 +127,7 @@ const Content = (): JSX.Element => {
           ref={stepButtonRefs[0]}
           className="w-48 bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
         >
-          <div className="absolute inset-0 rounded-xl bg-blue-900/[0.3] opacity-0 group-hover:opacity-25 group-active:opacity-100 h-full w-full"></div>
+          <div className="absolute inset-0 rounded-xl bg-blue-900/[0.3] opacity-0 group-hover:opacity-25 group-active:opacity-100 h-full w-full z-10"></div>
           <span>Start Walkthrough</span>
         </button>
 
@@ -134,8 +135,8 @@ const Content = (): JSX.Element => {
           className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
           onClick={handleSkip}
         >
-          <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full"></div>
-          Skip
+          <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full z-10"></div>
+          <span>Skip</span>
         </button>
       </div>
     </WalkthroughCard>,
@@ -151,8 +152,8 @@ const Content = (): JSX.Element => {
           className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
           onClick={handleNext}
         >
-          <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full"></div>
-          Next
+          <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full z-10"></div>
+          <span>Next</span>
         </button>
       </div>
     </WalkthroughCard>,
@@ -168,8 +169,8 @@ const Content = (): JSX.Element => {
           className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
           onClick={handleNext}
         >
-          <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full"></div>
-          Next
+          <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full z-10"></div>
+          <span>Next</span>
         </button>
       </div>
     </WalkthroughCard>,
@@ -185,7 +186,7 @@ const Content = (): JSX.Element => {
           onClick={handleSkip}
           className="w-full bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
         >
-          <div className="absolute inset-0 rounded-xl bg-blue-900/[0.3] opacity-0 group-hover:opacity-25 group-active:opacity-100 h-full w-full"></div>
+          <div className="absolute inset-0 rounded-xl bg-blue-900/[0.3] opacity-0 group-hover:opacity-25 group-active:opacity-100 h-full w-full z-10"></div>
           <span>Start earning data wages</span>
         </button>
       </div>
@@ -244,6 +245,37 @@ const Content = (): JSX.Element => {
       </div>
     </>
   );
+};
+
+const Signin = (): JSX.Element => {
+  return (
+    <div className="h-full relative p-2 flex flex-col items-center justify-around">
+      <Link
+        to="/"
+        className="block font-[Inter] uppercase text-bblue text-3xl text-center font-medium tracking-wider font-bold"
+      >
+        DATA EQUITY BANK
+      </Link>
+
+      <Link
+        to="/?signin=google"
+        className="block font-[Inter] uppercase text-bblue border border-bblue rounded-full px-4 py-3 text-center font-medium tracking-wider font-bold relative group"
+      >
+        <div className="absolute inset-0 rounded-full bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+        <span>SIGN IN WITH GOOGLE</span>
+      </Link>
+    </div>
+  );
+};
+
+const Content = (): JSX.Element => {
+  const [signedIn] = useQueryParam("signin", StringParam);
+
+  if (signedIn === "google") {
+    return <Home />;
+  }
+
+  return <Signin />;
 };
 
 function App() {
