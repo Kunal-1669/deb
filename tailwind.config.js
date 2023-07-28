@@ -10,7 +10,11 @@ module.exports = {
     extend: {},
     colors: {
       ...colors,
-      bblue: '#004aad'
+      bblue: '#004aad',
+      bdarkblue: '#1a3f70',
+      bblack: '#333333',
+      boffwhite: '#f0f3f8',
+      boffwhiteandblue: '#e6effb',
     },
   },
   plugins: [],
