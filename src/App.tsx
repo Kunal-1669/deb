@@ -58,14 +58,15 @@ const variants = {
 const AssetsHeader = (): JSX.Element => {
   return (
     <div
-      style={{
-        backgroundImage:
-          "linear-gradient(to bottom, #f0f3f8, #f0f3f8, #f0f3f8, transparent)",
-      }}
-      className="w-full rounded-t-2xl px-8 pt-5 pb-14"
+      className="w-full rounded-t-2xl py-8 flex flex-col gap-y-2"
     >
-      <div className="text-3xl font-bold font-[Inter] text-bdarkblue leading-none text-center">
+      <div className="text-3xl font-bold font-[Inter] text-bdarkblue leading-none tracking-wide">
         Assets
+      </div>
+
+      {/* subheading */}
+      <div className="text-md text-bblue/[0.75] font-medium">
+        Select an asset below to begin a simulation.
       </div>
     </div>
   );
@@ -96,9 +97,9 @@ const AssetPlaceholder = (): JSX.Element => {
 const AssetSelection = (): JSX.Element => {
   return (
     <>
-      <div className="max-w-sm mx-auto w-full">
+      <div className="max-w-md mx-auto w-full border border-bblue/[0.5] pb-5 px-5 rounded-2xl">
         <AssetsHeader />
-        <div className="flex flex-col gap-y-2.5 mt-5">
+        <div className="flex flex-col gap-y-2.5">
           <AssetPlaceholder />
           <AssetPlaceholder />
           <AssetPlaceholder />
@@ -253,8 +254,9 @@ const Home = (): JSX.Element => {
       <div className="h-full relative p-2 flex flex-col items-stretch justify-start bg-blue-100/[0.8] gap-y-10">
         <Link
           to="/"
-          className="font-[Inter] uppercase text-bblue text-xl sm:text-3xl text-center tracking-wider font-bold"
+          className="font-[Inter] uppercase text-bblue/[0.8] text-md text-center tracking-wider font-bold bg-boffwhite rounded-lg relative group min-h-[2rem] flex items-center justify-center"
         >
+        <div className="absolute inset-0 rounded-lg bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
           <span>DATA EQUITY BANK</span>
         </Link>
 
@@ -315,9 +317,9 @@ const Signin = (): JSX.Element => {
 
       <Link
         to="/?signin=google&step=0"
-        className="block font-[Inter] uppercase text-bblue border border-bblue rounded-full px-4 py-3 text-center tracking-wider font-bold relative group"
+        className="block font-[Inter] uppercase text-bblue border border-bblue rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group"
       >
-        <div className="absolute inset-0 rounded-full bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+        <div className="absolute inset-0 rounded-xl bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
         <span>SIGN IN WITH GOOGLE</span>
       </Link>
     </div>
