@@ -12,18 +12,21 @@ import { useCallback, useRef, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 
-const WalkthroughCard = (props: { children: React.ReactNode, height?: string }): JSX.Element => {
-  const { height } = props
+const WalkthroughCard = (props: {
+  children: React.ReactNode;
+  height?: string;
+}): JSX.Element => {
+  const { height } = props;
 
   // TODO: reduce duplication here
   if (height == null) {
-  return (
-    <div className="rounded-3xl bg-blue-700 shadow-xl h-[calc(100%-5rem)] w-[calc(100%-2.5rem)] max-w-[25rem] max-h-[34rem]">
-      <div className="flex flex-col gap-y-10 h-full items-center justify-between">
-        {props.children}
+    return (
+      <div className="rounded-3xl bg-blue-700 shadow-xl h-[calc(100%-5rem)] w-[calc(100%-2.5rem)] max-w-[25rem] max-h-[34rem]">
+        <div className="flex flex-col gap-y-10 h-full items-center justify-between">
+          {props.children}
+        </div>
       </div>
-    </div>
-  );
+    );
   }
 
   return (
@@ -68,6 +71,21 @@ const variants = {
   },
 };
 
+const PaymentHistoryHeader = (): JSX.Element => {
+  return (
+    <div className="w-full rounded-t-2xl py-8 flex flex-col gap-y-2">
+      <div className="text-3xl font-bold font-[Inter] text-bdarkblue leading-none tracking-wide">
+        Transactions
+      </div>
+
+      {/* subheading */}
+      <div className="text-md text-bblue/[0.75] font-medium">
+        Find data wage invoices below.
+      </div>
+    </div>
+  );
+};
+
 const AssetsHeader = (): JSX.Element => {
   return (
     <div className="w-full rounded-t-2xl py-8 flex flex-col gap-y-2">
@@ -83,8 +101,91 @@ const AssetsHeader = (): JSX.Element => {
   );
 };
 
+// TODO: refactor this into useSimulator
+//
+//   example:
+//
+//     const {state, open, close} = useSimulator()
+//
+//     return <button onClick={open}>{state}</button>
+//
 const useSimulatorState = () => {
   return useQueryParam("sim", StringParam);
+};
+
+const PaymentTransactionPlaceholder = (props: {
+  icon?: "dollar" | "bank" | "cash";
+  time?: string
+}): JSX.Element => {
+  const { icon = "dollar", time = "Jul 22" } = props;
+
+  return (
+    <>
+      <div className="flex gap-2 relative items-center">
+        <div className="w-10 h-10 rounded-full bg-boffwhiteandblue text-bblue/[0.5] flex items-center justify-center">
+          {icon === "dollar" ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          ) : icon === "bank" ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"
+              />
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
+              />
+            </svg>
+          )}
+        </div>
+        <div className="grow flex flex-col gap-y-1.5">
+          <div className="h-2 rounded-md w-[60%] bg-bdarkblue/[0.5]"></div>
+          <div className="font-[Inter] font-light leading-none h-2 rounded-md w-[35%] text-bdarkblue/[0.25]">
+            {time}
+          </div>
+        </div>
+        <div className="self-end flex flex-col gap-y-0.5 items-start">
+          <span className="text-green-700 font-bold text-md leading-none flex items-start">
+            <span style={{ fontSize: "0.95em" }}>+</span>
+            <span style={{ fontSize: "0.9em" }}>$</span>
+            <span>25.00</span>
+          </span>
+        </div>
+      </div>
+    </>
+  );
 };
 
 const AssetPlaceholder = (): JSX.Element => {
@@ -131,6 +232,88 @@ const AssetSelection = (): JSX.Element => {
           <AssetPlaceholder />
           <AssetPlaceholder />
           <AssetPlaceholder />
+        </div>
+      </div>
+    </>
+  );
+};
+
+const usePage = () => useQueryParam("page", StringParam);
+
+const GoToPaymentHistory = (): JSX.Element => {
+  const [page, setPage] = usePage();
+
+  const onClick = useCallback(() => {
+    setPage("payment-history");
+  }, [setPage]);
+
+  return (
+    <button
+      onClick={onClick}
+      className="font-[Inter] uppercase text-[#8dd5ff] text-md text-center tracking-wider font-bold bg-boffwhiteandblue rounded-lg relative group min-h-[2rem] flex items-center justify-center px-2"
+    >
+      <div className="absolute inset-0 rounded-lg bg-bblue/[0.4] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+      <span>Payment History</span>
+    </button>
+  );
+};
+
+const GoToHome = (): JSX.Element => {
+  const [page, setPage] = usePage();
+
+  const onClick = useCallback(() => {
+    setPage("home");
+  }, [setPage]);
+
+  return (
+    <button
+      onClick={onClick}
+      className="font-[Inter] uppercase text-[#8dd5ff] text-md text-center tracking-wider font-bold bg-boffwhiteandblue rounded-lg relative group min-h-[2rem] flex items-center justify-center px-2"
+    >
+      <div className="absolute inset-0 rounded-lg bg-bblue/[0.4] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+      <span>Home</span>
+    </button>
+  );
+};
+
+const Header = (): JSX.Element => {
+  return (
+    <div className="flex flex-col gap-y-2">
+      <div className="text-center text-bblue/[0.5] font-semibold text-xs">
+        DATA EQUITY BANK
+      </div>
+
+      <div className="flex gap-2 flex-wrap">
+        <GoToHome />
+
+        <GoToPaymentHistory />
+
+        <Link
+          to="/"
+          className="font-[Inter] uppercase text-bblue/[0.8] text-md text-center tracking-wider font-bold bg-boffwhite rounded-lg relative group min-h-[2rem] flex items-center justify-center px-2 grow"
+        >
+          <div className="absolute inset-0 rounded-lg bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+          <span>Sign Out</span>
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+const PaymentHistory = (): JSX.Element => {
+  return (
+    <>
+      <div className="h-full relative p-2 flex flex-col items-stretch justify-start bg-blue-100/[0.8] gap-y-10">
+        <Header />
+
+        <div className="max-w-md mx-auto w-full border border-bblue/[0.5] pb-5 px-5 rounded-2xl">
+          <PaymentHistoryHeader />
+
+          <div className="flex flex-col gap-y-10">
+            <PaymentTransactionPlaceholder time="Jun 26" />
+            <PaymentTransactionPlaceholder time="Jun 22" icon="bank" />
+            <PaymentTransactionPlaceholder time="Jul 3" icon='cash' />
+          </div>
         </div>
       </div>
     </>
@@ -279,22 +462,16 @@ const Home = (): JSX.Element => {
 
   const dragControls = useDragControls();
 
-  const [, setSimulatorState] = useSimulatorState()
+  const [, setSimulatorState] = useSimulatorState();
 
   const stopSimulation = useCallback(() => {
-    setSimulatorState('closed')
-  }, [setSimulatorState])
+    setSimulatorState("closed");
+  }, [setSimulatorState]);
 
   return (
     <>
       <div className="h-full relative p-2 flex flex-col items-stretch justify-start bg-blue-100/[0.8] gap-y-10">
-        <Link
-          to="/"
-          className="font-[Inter] uppercase text-bblue/[0.8] text-md text-center tracking-wider font-bold bg-boffwhite rounded-lg relative group min-h-[2rem] flex items-center justify-center"
-        >
-          <div className="absolute inset-0 rounded-lg bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
-          <span>DATA EQUITY BANK</span>
-        </Link>
+        <Header />
 
         <AssetSelection />
 
@@ -354,13 +531,13 @@ const Home = (): JSX.Element => {
                 You have completed the simulation.
               </div>
 
-      <button
-        onClick={stopSimulation}
-        className="block font-[Inter] uppercase text-boffwhite border border-boffwhite rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group cursor-pointer mb-10"
-      >
-        <div className="absolute inset-0 rounded-xl bg-boffwhite/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
-        <span>Take Again</span>
-      </button>
+              <button
+                onClick={stopSimulation}
+                className="block font-[Inter] uppercase text-boffwhite border border-boffwhite rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group cursor-pointer mb-10"
+              >
+                <div className="absolute inset-0 rounded-xl bg-boffwhite/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+                <span>Take Again</span>
+              </button>
             </WalkthroughCard>
           </div>
         </Dialog>
@@ -392,8 +569,14 @@ const Signin = (): JSX.Element => {
 
 const Content = (): JSX.Element => {
   const [signedIn] = useQueryParam("signin", StringParam);
+  const [page] = usePage();
 
   if (signedIn === "google") {
+    if (page == "payment-history") {
+      return <PaymentHistory />;
+    }
+
+    // if page == null || page == 'home'
     return <Home />;
   }
 
