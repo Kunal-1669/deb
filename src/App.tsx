@@ -172,7 +172,7 @@ const PaymentTransactionPlaceholder = (props: {
         </div>
         <div className="grow flex flex-col gap-y-1.5">
           <div className="h-2 rounded-md w-[60%] bg-bdarkblue/[0.5]"></div>
-          <div className="font-[Inter] font-light leading-none h-2 rounded-md w-[35%] text-bdarkblue/[0.25]">
+          <div className="font-[Inter] font-light leading-none h-2 rounded-md w-[35%] text-bdarkblue/[0.5]">
             {time}
           </div>
         </div>
@@ -306,7 +306,7 @@ const PaymentHistory = (): JSX.Element => {
       <div className="h-full relative p-2 flex flex-col items-stretch justify-start bg-blue-100/[0.8] gap-y-10">
         <Header />
 
-        <div className="max-w-md mx-auto w-full border border-bblue/[0.5] pb-5 px-5 rounded-2xl">
+        <div className="max-w-md mx-auto w-full pb-5 px-5 rounded-2xl bg-boffwhite shadow-sm">
           <PaymentHistoryHeader />
 
           <div className="flex flex-col gap-y-10">
