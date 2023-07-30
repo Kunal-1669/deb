@@ -115,7 +115,7 @@ const useSimulatorState = () => {
 
 const PaymentTransactionPlaceholder = (props: {
   icon?: "dollar" | "bank" | "cash";
-  time?: string
+  time?: string;
 }): JSX.Element => {
   const { icon = "dollar", time = "Jul 22" } = props;
 
@@ -312,7 +312,7 @@ const PaymentHistory = (): JSX.Element => {
           <div className="flex flex-col gap-y-10">
             <PaymentTransactionPlaceholder time="Jun 26" />
             <PaymentTransactionPlaceholder time="Jun 22" icon="bank" />
-            <PaymentTransactionPlaceholder time="Jul 3" icon='cash' />
+            <PaymentTransactionPlaceholder time="Jul 3" icon="cash" />
           </div>
         </div>
       </div>
@@ -507,10 +507,14 @@ const Home = (): JSX.Element => {
                   moveCarousel(-1);
                 }
               }}
-              className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-[22.5rem] h-full top-0 bottom-0 max-h-full flex items-center justify-center"
+              className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-[22.5rem] h-full top-0 bottom-0 max-h-full flex items-center justify-center z-10"
             >
               {walkthroughStep == null ? steps[0] : steps[walkthroughStep]}
             </motion.div>
+            <div
+              onClick={handleSkip}
+              className="fixed inset-0 bg-blue-900/[0.1] z-0"
+            ></div>
           </AnimatePresence>
         </Dialog>
 
@@ -540,6 +544,11 @@ const Home = (): JSX.Element => {
               </button>
             </WalkthroughCard>
           </div>
+
+          <div
+            onClick={stopSimulation}
+            className="fixed inset-0 bg-blue-900/[0.1] z-0"
+          />
         </Dialog>
       </div>
     </>
