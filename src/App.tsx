@@ -77,7 +77,7 @@ const AssetsHeader = (): JSX.Element => {
 
       {/* subheading */}
       <div className="text-md text-bblue/[0.75] font-medium">
-        Select an asset below to begin a simulation.
+        Select a simulation below to begin.
       </div>
     </div>
   );
@@ -139,7 +139,6 @@ const AssetSelection = (): JSX.Element => {
 
 const Home = (): JSX.Element => {
   const [simulatorState] = useSimulatorState();
-  console.log(simulatorState);
 
   // TODO: rename this
   const [walkthroughSkipped, setWalkthroughSkipped] = useQueryParam(
@@ -228,7 +227,7 @@ const Home = (): JSX.Element => {
 
     <WalkthroughCard key={1}>
       <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2">
-        1. Select an asset.
+        1. Select a simulation.
       </Dialog.Title>
 
       <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full p-5 pb-0">
