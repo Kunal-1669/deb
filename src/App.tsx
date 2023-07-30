@@ -12,18 +12,21 @@ import { useCallback, useRef, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 
-const WalkthroughCard = (props: { children: React.ReactNode, height?: string }): JSX.Element => {
-  const { height } = props
+const WalkthroughCard = (props: {
+  children: React.ReactNode;
+  height?: string;
+}): JSX.Element => {
+  const { height } = props;
 
   // TODO: reduce duplication here
   if (height == null) {
-  return (
-    <div className="rounded-3xl bg-blue-700 shadow-xl h-[calc(100%-5rem)] w-[calc(100%-2.5rem)] max-w-[25rem] max-h-[34rem]">
-      <div className="flex flex-col gap-y-10 h-full items-center justify-between">
-        {props.children}
+    return (
+      <div className="rounded-3xl bg-blue-700 shadow-xl h-[calc(100%-5rem)] w-[calc(100%-2.5rem)] max-w-[25rem] max-h-[34rem]">
+        <div className="flex flex-col gap-y-10 h-full items-center justify-between">
+          {props.children}
+        </div>
       </div>
-    </div>
-  );
+    );
   }
 
   return (
@@ -132,6 +135,292 @@ const AssetSelection = (): JSX.Element => {
           <AssetPlaceholder />
           <AssetPlaceholder />
         </div>
+      </div>
+    </>
+  );
+};
+
+const usePage = () => useQueryParam("page", StringParam);
+
+const GoToPaymentHistory = (): JSX.Element => {
+  const [page, setPage] = usePage();
+
+  const onClick = useCallback(() => {
+    setPage("payment-history");
+  }, [setPage]);
+
+  return (
+    <button
+      onClick={onClick}
+      className="font-[Inter] uppercase text-[#8dd5ff] text-md text-center tracking-wider font-bold bg-boffwhiteandblue rounded-lg relative group min-h-[2rem] flex items-center justify-center px-2"
+    >
+      <div className="absolute inset-0 rounded-lg bg-bblue/[0.4] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+      <span>Payment History</span>
+    </button>
+  );
+};
+
+const GoToHome = (): JSX.Element => {
+  const [page, setPage] = usePage();
+
+  const onClick = useCallback(() => {
+    setPage("home");
+  }, [setPage]);
+
+  return (
+    <button
+      onClick={onClick}
+      className="font-[Inter] uppercase text-[#8dd5ff] text-md text-center tracking-wider font-bold bg-boffwhiteandblue rounded-lg relative group min-h-[2rem] flex items-center justify-center px-2"
+    >
+      <div className="absolute inset-0 rounded-lg bg-bblue/[0.4] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+      <span>Home</span>
+    </button>
+  );
+};
+
+const Header = (): JSX.Element => {
+  return (
+    <div className="flex flex-col gap-y-2">
+      <div className="text-center text-bblue/[0.5] font-semibold text-xs">
+        DATA EQUITY BANK
+      </div>
+
+      <div className="flex gap-2 flex-wrap">
+        <GoToHome />
+
+        <GoToPaymentHistory />
+
+        <Link
+          to="/"
+          className="font-[Inter] uppercase text-bblue/[0.8] text-md text-center tracking-wider font-bold bg-boffwhite rounded-lg relative group min-h-[2rem] flex items-center justify-center px-2 grow"
+        >
+          <div className="absolute inset-0 rounded-lg bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+          <span>Sign Out</span>
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+const PaymentHistory = (): JSX.Element => {
+  const [simulatorState] = useSimulatorState();
+
+  // TODO: rename this
+  const [walkthroughSkipped, setWalkthroughSkipped] = useQueryParam(
+    "ws",
+    BooleanParam
+  );
+
+  const [walkthroughStep, setWalkthroughStep] = useQueryParam(
+    "step",
+    NumberParam
+  );
+
+  const handleSkip = useCallback(() => {
+    setWalkthroughSkipped(true);
+  }, [setWalkthroughSkipped]);
+
+  const [direction, setDirection] = useState(0);
+
+  const moveCarousel = useCallback(
+    (newDirection: number) => {
+      if (walkthroughStep != null) {
+        const max = steps.length;
+        const newStep = (((walkthroughStep + newDirection) % max) + max) % max;
+        setWalkthroughStep(newStep);
+        setDirection(newDirection);
+        setTimeout(() => {
+          const newStepButtonRef = stepButtonRefs[newStep];
+          if (newStepButtonRef && newStepButtonRef.current) {
+            newStepButtonRef.current.focus();
+          }
+        }, 100);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [walkthroughStep, setWalkthroughStep]
+  );
+
+  const handleNext = useCallback(() => {
+    if (walkthroughStep == null) {
+      setWalkthroughStep(1);
+      setTimeout(() => {
+        const newStepButtonRef = stepButtonRefs[1];
+        if (newStepButtonRef && newStepButtonRef.current) {
+          newStepButtonRef.current.focus();
+        }
+      }, 100);
+    } else {
+      moveCarousel(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moveCarousel, setWalkthroughStep, walkthroughStep]);
+
+  const stepButtonRefs = [
+    useRef<HTMLButtonElement>(null),
+    useRef<HTMLButtonElement>(null),
+    useRef<HTMLButtonElement>(null),
+    useRef<HTMLButtonElement>(null),
+  ];
+
+  // TODO: i18n
+  const steps = [
+    <WalkthroughCard key={0}>
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2 text-center">
+        Welcome to Data&nbsp;Equity&nbsp;Bank!
+      </Dialog.Title>
+
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-center">
+        <button
+          onClick={handleNext}
+          ref={stepButtonRefs[0]}
+          className="w-48 bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
+        >
+          <div className="absolute inset-0 rounded-xl bg-blue-900/[0.3] opacity-0 group-hover:opacity-25 group-active:opacity-100 h-full w-full z-10"></div>
+          <span>Start Walkthrough</span>
+        </button>
+
+        <button
+          className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
+          onClick={handleSkip}
+        >
+          <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full z-10"></div>
+          <span>Skip</span>
+        </button>
+      </div>
+    </WalkthroughCard>,
+
+    <WalkthroughCard key={1}>
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2">
+        1. Select a simulation.
+      </Dialog.Title>
+
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full p-5 pb-0">
+        <button
+          ref={stepButtonRefs[1]}
+          className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
+          onClick={handleNext}
+        >
+          <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full z-10"></div>
+          <span>Next</span>
+        </button>
+      </div>
+    </WalkthroughCard>,
+
+    <WalkthroughCard key={2}>
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2">
+        2. Generate data.
+      </Dialog.Title>
+
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full p-5 pb-0">
+        <button
+          ref={stepButtonRefs[2]}
+          className="w-48 text-blue-50 font-medium text-lg p-3 leading-none rounded-xl text-center font-[Inter] tracking-tight cursor-pointer relative group"
+          onClick={handleNext}
+        >
+          <div className="absolute inset-0 rounded-xl bg-blue-50/[0.1] opacity-0 group-hover:opacity-100 group-active:opacity-75 h-full w-full z-10"></div>
+          <span>Next</span>
+        </button>
+      </div>
+    </WalkthroughCard>,
+
+    <WalkthroughCard key={3}>
+      <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2">
+        3. {/* possibly redeem */} Receive data wages.
+      </Dialog.Title>
+
+      <div className="flex flex-col gap-y-10 mb-10 grow justify-end h-full p-5 pb-0">
+        <button
+          ref={stepButtonRefs[3]}
+          onClick={handleSkip}
+          className="w-full bg-blue-50 text-blue-800 text-center font-[Inter] font-semibold text-lg rounded-xl leading-none p-3 tracking-tight cursor-pointer relative group"
+        >
+          <div className="absolute inset-0 rounded-xl bg-blue-900/[0.3] opacity-0 group-hover:opacity-25 group-active:opacity-100 h-full w-full z-10"></div>
+          <span>Start earning data wages</span>
+        </button>
+      </div>
+    </WalkthroughCard>,
+  ];
+
+  const dragControls = useDragControls();
+
+  const [, setSimulatorState] = useSimulatorState();
+
+  const stopSimulation = useCallback(() => {
+    setSimulatorState("closed");
+  }, [setSimulatorState]);
+
+  return (
+    <>
+      <div className="h-full relative p-2 flex flex-col items-stretch justify-start bg-blue-100/[0.8] gap-y-10">
+        <Header />
+
+        <Dialog
+          open={!walkthroughSkipped}
+          as="div"
+          className="absolute inset-0 flex justify-center items-center overflow-hidden"
+          initialFocus={stepButtonRefs[walkthroughStep ?? 0]}
+          onClose={handleSkip}
+        >
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={walkthroughStep}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              dragControls={dragControls}
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 350, damping: 45 },
+                opacity: { duration: 0.2 },
+              }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={1}
+              onDragEnd={(_e, { offset, velocity }) => {
+                const swipe = swipePower(offset.x, velocity.x);
+
+                if (swipe < -swipeConfidenceThreshold) {
+                  moveCarousel(1);
+                } else if (swipe > swipeConfidenceThreshold) {
+                  moveCarousel(-1);
+                }
+              }}
+              className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-[22.5rem] h-full top-0 bottom-0 max-h-full flex items-center justify-center"
+            >
+              {walkthroughStep == null ? steps[0] : steps[walkthroughStep]}
+            </motion.div>
+          </AnimatePresence>
+        </Dialog>
+
+        <Dialog
+          open={simulatorState === "open"}
+          as="div"
+          className="absolute inset-0 flex justify-center items-center overflow-hidden"
+          initialFocus={stepButtonRefs[walkthroughStep ?? 0]}
+          onClose={handleSkip}
+        >
+          <div className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-[22.5rem] h-full top-0 bottom-0 max-h-full flex items-center justify-center">
+            <WalkthroughCard height="auto">
+              <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2 text-center">
+                Success!
+              </Dialog.Title>
+
+              <div className="font-[Inter] max-w-xs text-blue-50 font-semibold px-5 py-10 text-center">
+                You have completed the simulation.
+              </div>
+
+              <button
+                onClick={stopSimulation}
+                className="block font-[Inter] uppercase text-boffwhite border border-boffwhite rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group cursor-pointer mb-10"
+              >
+                <div className="absolute inset-0 rounded-xl bg-boffwhite/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+                <span>Take Again</span>
+              </button>
+            </WalkthroughCard>
+          </div>
+        </Dialog>
       </div>
     </>
   );
@@ -279,22 +568,16 @@ const Home = (): JSX.Element => {
 
   const dragControls = useDragControls();
 
-  const [, setSimulatorState] = useSimulatorState()
+  const [, setSimulatorState] = useSimulatorState();
 
   const stopSimulation = useCallback(() => {
-    setSimulatorState('closed')
-  }, [setSimulatorState])
+    setSimulatorState("closed");
+  }, [setSimulatorState]);
 
   return (
     <>
       <div className="h-full relative p-2 flex flex-col items-stretch justify-start bg-blue-100/[0.8] gap-y-10">
-        <Link
-          to="/"
-          className="font-[Inter] uppercase text-bblue/[0.8] text-md text-center tracking-wider font-bold bg-boffwhite rounded-lg relative group min-h-[2rem] flex items-center justify-center"
-        >
-          <div className="absolute inset-0 rounded-lg bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
-          <span>DATA EQUITY BANK</span>
-        </Link>
+        <Header />
 
         <AssetSelection />
 
@@ -354,13 +637,13 @@ const Home = (): JSX.Element => {
                 You have completed the simulation.
               </div>
 
-      <button
-        onClick={stopSimulation}
-        className="block font-[Inter] uppercase text-boffwhite border border-boffwhite rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group cursor-pointer mb-10"
-      >
-        <div className="absolute inset-0 rounded-xl bg-boffwhite/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
-        <span>Take Again</span>
-      </button>
+              <button
+                onClick={stopSimulation}
+                className="block font-[Inter] uppercase text-boffwhite border border-boffwhite rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group cursor-pointer mb-10"
+              >
+                <div className="absolute inset-0 rounded-xl bg-boffwhite/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+                <span>Take Again</span>
+              </button>
             </WalkthroughCard>
           </div>
         </Dialog>
@@ -392,8 +675,14 @@ const Signin = (): JSX.Element => {
 
 const Content = (): JSX.Element => {
   const [signedIn] = useQueryParam("signin", StringParam);
+  const [page] = usePage();
 
   if (signedIn === "google") {
+    if (page == "payment-history") {
+      return <PaymentHistory />;
+    }
+
+    // if page == null || page == 'home'
     return <Home />;
   }
 
