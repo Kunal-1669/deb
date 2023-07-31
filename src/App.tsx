@@ -86,11 +86,26 @@ const PaymentHistoryHeader = (): JSX.Element => {
   );
 };
 
+const WithdrawalsHeader = (): JSX.Element => {
+  return (
+    <div className="w-full rounded-t-2xl py-8 flex flex-col gap-y-2">
+      <div className="text-3xl font-bold font-[Inter] text-bdarkblue leading-none tracking-wide">
+        Start a withdrawal
+      </div>
+
+      {/* subheading */}
+      <div className="text-md text-bblue/[0.75] font-medium">
+        Sign in with PayPal below to begin.
+      </div>
+    </div>
+  );
+};
+
 const AssetsHeader = (): JSX.Element => {
   return (
     <div className="w-full rounded-t-2xl py-8 flex flex-col gap-y-2">
       <div className="text-3xl font-bold font-[Inter] text-bdarkblue leading-none tracking-wide">
-        Assets
+        Simulations
       </div>
 
       {/* subheading */}
@@ -116,8 +131,9 @@ const useSimulatorState = () => {
 const PaymentTransactionPlaceholder = (props: {
   icon?: "dollar" | "bank" | "cash";
   time?: string;
+  withdrawal?: boolean;
 }): JSX.Element => {
-  const { icon = "dollar", time = "Jul 22" } = props;
+  const { icon = "dollar", time = "Jul 22", withdrawal = false } = props;
 
   return (
     <>
@@ -177,11 +193,19 @@ const PaymentTransactionPlaceholder = (props: {
           </div>
         </div>
         <div className="self-end flex flex-col gap-y-0.5 items-start">
-          <span className="text-green-700 font-bold text-md leading-none flex items-start">
-            <span style={{ fontSize: "0.95em" }}>+</span>
-            <span style={{ fontSize: "0.9em" }}>$</span>
-            <span>25.00</span>
-          </span>
+          {withdrawal ? (
+            <span className="text-red-700 font-bold text-md leading-none flex items-start">
+              <span style={{ fontSize: "0.95em" }}>-</span>
+              <span style={{ fontSize: "0.9em" }}>$</span>
+              <span>25.00</span>
+            </span>
+          ) : (
+            <span className="text-green-700 font-bold text-md leading-none flex items-start">
+              <span style={{ fontSize: "0.95em" }}>+</span>
+              <span style={{ fontSize: "0.9em" }}>$</span>
+              <span>25.00</span>
+            </span>
+          )}
         </div>
       </div>
     </>
@@ -253,7 +277,7 @@ const GoToPaymentHistory = (): JSX.Element => {
       className="font-[Inter] uppercase text-[#8dd5ff] text-md text-center tracking-wider font-bold bg-boffwhiteandblue rounded-lg relative group min-h-[2rem] flex items-center justify-center px-2"
     >
       <div className="absolute inset-0 rounded-lg bg-bblue/[0.4] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
-      <span>Payment History</span>
+      <span>Transactions</span>
     </button>
   );
 };
@@ -300,7 +324,23 @@ const Header = (): JSX.Element => {
   );
 };
 
+const useWithdrawFlow = () => {
+  const [state, setState] = useQueryParam("withdraw", StringParam);
+
+  const open = useCallback(() => {
+    setState("open");
+  }, [setState]);
+
+  const close = useCallback(() => {
+    setState("closed");
+  }, [setState]);
+
+  return { state, open, close };
+};
+
 const PaymentHistory = (): JSX.Element => {
+  const withdrawFlow = useWithdrawFlow();
+
   return (
     <>
       <div className="h-full relative p-2 flex flex-col items-stretch justify-start bg-blue-100/[0.8] gap-y-10">
@@ -311,11 +351,61 @@ const PaymentHistory = (): JSX.Element => {
 
           <div className="flex flex-col gap-y-10">
             <PaymentTransactionPlaceholder time="Jun 26" />
-            <PaymentTransactionPlaceholder time="Jun 22" icon="bank" />
+            <PaymentTransactionPlaceholder
+              time="Jun 22"
+              icon="bank"
+              withdrawal
+            />
             <PaymentTransactionPlaceholder time="Jul 3" icon="cash" />
           </div>
         </div>
+
+        <div className="max-w-md mx-auto w-full pb-5 px-5 rounded-2xl bg-boffwhite shadow-sm">
+          <WithdrawalsHeader />
+
+          <div className="flex justify-center">
+            <button
+              onClick={withdrawFlow.open}
+              className="block font-[Inter] uppercase text-bblue border border-bblue rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group"
+            >
+              <div className="absolute inset-0 rounded-xl bg-bblue/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+              <span>SIGN IN WITH PAYPAL</span>
+            </button>
+          </div>
+        </div>
       </div>
+
+        <Dialog
+          open={withdrawFlow.state === 'open'}
+          as="div"
+          className="absolute inset-0 flex justify-center items-center overflow-hidden"
+          onClose={withdrawFlow.close}
+        >
+          <div className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-[22.5rem] h-full top-0 bottom-0 max-h-full flex items-center justify-center">
+            <WalkthroughCard height="auto">
+              <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2 text-center">
+                Success!
+              </Dialog.Title>
+
+              <div className="font-[Inter] max-w-xs text-blue-50 font-semibold px-5 py-10 text-center">
+                You have completed the withdrawal.
+              </div>
+
+              <button
+                onClick={withdrawFlow.close}
+                className="block font-[Inter] uppercase text-boffwhite border border-boffwhite rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group cursor-pointer mb-10"
+              >
+                <div className="absolute inset-0 rounded-xl bg-boffwhite/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+                <span>Close</span>
+              </button>
+            </WalkthroughCard>
+          </div>
+
+          <div
+            onClick={withdrawFlow.close}
+            className="fixed inset-0 bg-blue-900/[0.1] z-0"
+          />
+        </Dialog>
     </>
   );
 };
