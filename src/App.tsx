@@ -1,3 +1,4 @@
+import cx from 'classnames'
 import "./App.css";
 import {
   BooleanParam,
@@ -11,6 +12,10 @@ import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 import { useCallback, useRef, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
+
+const usePage = () => useQueryParam("page", StringParam);
+
+const useExplorerMode = () => useQueryParam("em", StringParam);
 
 const WalkthroughCard = (props: {
   children: React.ReactNode;
@@ -232,8 +237,18 @@ const AssetPlaceholder = (): JSX.Element => {
   );
 };
 
-const ExploreModeSelector = (): JSX.Element => {
-  const iconClassName = 'w-8 h-8'
+const ExplorerModeSelector = (): JSX.Element => {
+  const [explorerMode, setExplorerMode] = useExplorerMode()
+
+  const handleStackClick = useCallback(() => {
+    setExplorerMode('stack')
+  }, [setExplorerMode])
+
+  const handleCardClick = useCallback(() => {
+    setExplorerMode('card')
+  }, [setExplorerMode])
+
+  const iconClassName = "w-8 h-8";
 
   const rowsIcon = (
     <svg
@@ -253,41 +268,54 @@ const ExploreModeSelector = (): JSX.Element => {
   );
 
   const stackIcon = (
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={iconClassName}>
-  <path fillRule="evenodd" d="M6 4.75A.75.75 0 016.75 4h10.5a.75.75 0 010 1.5H6.75A.75.75 0 016 4.75zM6 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H6.75A.75.75 0 016 10zm0 5.25a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H6.75a.75.75 0 01-.75-.75zM1.99 4.75a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1v-.01zM1.99 15.25a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1v-.01zM1.99 10a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1V10z" clipRule="evenodd" />
-</svg>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className={iconClassName}
+    >
+      <path
+        fillRule="evenodd"
+        d="M6 4.75A.75.75 0 016.75 4h10.5a.75.75 0 010 1.5H6.75A.75.75 0 016 4.75zM6 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H6.75A.75.75 0 016 10zm0 5.25a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H6.75a.75.75 0 01-.75-.75zM1.99 4.75a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1v-.01zM1.99 15.25a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1v-.01zM1.99 10a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1V10z"
+        clipRule="evenodd"
+      />
+    </svg>
   );
 
   return (
     <div className="mb-10">
-      <div className="inline-block border-b-4 text-bblack/[0.5] border-transparent p-2">
+      <button onClick={handleCardClick} className={cx("inline-block border-b-4 p-2", explorerMode !== 'stack' ? 'border-bblack text-bblack' : "text-bblack/[0.5] border-transparent p-2")}>
         {rowsIcon}
-      </div>
+      </button>
 
-      <div className="inline-block border-b-4 border-bblack text-bblack p-2">
+      <button onClick={handleStackClick} className={cx("inline-block border-b-4 p-2", explorerMode === 'stack' ? 'border-bblack text-bblack' : "text-bblack/[0.5] border-transparent p-2")}>
         {stackIcon}
-      </div>
+      </button>
     </div>
   );
 };
 
 const AssetSelection = (): JSX.Element => {
+  const [explorerMode] = useExplorerMode();
+
   return (
     <>
       <div className="max-w-md mx-auto w-full pb-5 rounded-2xl">
-        <ExploreModeSelector />
-        
-        <div className="flex flex-col gap-y-2.5">
-          <AssetPlaceholder />
-          <AssetPlaceholder />
-          <AssetPlaceholder />
-        </div>
+        <ExplorerModeSelector />
+
+        {explorerMode === "stack" ? (
+          <div className="flex flex-col gap-y-2.5">
+            <AssetPlaceholder />
+            <AssetPlaceholder />
+            <AssetPlaceholder />
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );
 };
-
-const usePage = () => useQueryParam("page", StringParam);
 
 const GoToPaymentHistory = (): JSX.Element => {
   const [, setPage] = usePage();
