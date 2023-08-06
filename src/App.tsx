@@ -101,21 +101,6 @@ const WithdrawalsHeader = (): JSX.Element => {
   );
 };
 
-const AssetsHeader = (): JSX.Element => {
-  return (
-    <div className="w-full rounded-t-2xl py-8 flex flex-col gap-y-2">
-      <div className="text-3xl font-bold font-[Inter] text-bdarkblue leading-none tracking-wide">
-        Simulations
-      </div>
-
-      {/* subheading */}
-      <div className="text-md text-bblue/[0.75] font-medium">
-        Select a simulation below to begin.
-      </div>
-    </div>
-  );
-};
-
 // TODO: refactor this into useSimulator
 //
 //   example:
@@ -247,11 +232,51 @@ const AssetPlaceholder = (): JSX.Element => {
   );
 };
 
+const ExploreModeSelector = (): JSX.Element => {
+  const iconClassName = 'w-8 h-8'
+
+  const rowsIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className={iconClassName}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 004.5 9v.878m13.5-3A2.25 2.25 0 0119.5 9v.878m0 0a2.246 2.246 0 00-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0121 12v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6c0-.98.626-1.813 1.5-2.122"
+      />
+    </svg>
+  );
+
+  const stackIcon = (
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={iconClassName}>
+  <path fillRule="evenodd" d="M6 4.75A.75.75 0 016.75 4h10.5a.75.75 0 010 1.5H6.75A.75.75 0 016 4.75zM6 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H6.75A.75.75 0 016 10zm0 5.25a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H6.75a.75.75 0 01-.75-.75zM1.99 4.75a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1v-.01zM1.99 15.25a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1v-.01zM1.99 10a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1V10z" clipRule="evenodd" />
+</svg>
+  );
+
+  return (
+    <div className="mb-10">
+      <div className="inline-block border-b-4 text-bblack/[0.5] border-transparent p-2">
+        {rowsIcon}
+      </div>
+
+      <div className="inline-block border-b-4 border-bblack text-bblack p-2">
+        {stackIcon}
+      </div>
+    </div>
+  );
+};
+
 const AssetSelection = (): JSX.Element => {
   return (
     <>
-      <div className="max-w-md mx-auto w-full border border-bblue/[0.5] pb-5 px-5 rounded-2xl">
-        <AssetsHeader />
+      <div className="max-w-md mx-auto w-full pb-5 rounded-2xl">
+        <ExploreModeSelector />
+        
         <div className="flex flex-col gap-y-2.5">
           <AssetPlaceholder />
           <AssetPlaceholder />
@@ -265,7 +290,7 @@ const AssetSelection = (): JSX.Element => {
 const usePage = () => useQueryParam("page", StringParam);
 
 const GoToPaymentHistory = (): JSX.Element => {
-  const [page, setPage] = usePage();
+  const [, setPage] = usePage();
 
   const onClick = useCallback(() => {
     setPage("payment-history");
@@ -283,7 +308,7 @@ const GoToPaymentHistory = (): JSX.Element => {
 };
 
 const GoToHome = (): JSX.Element => {
-  const [page, setPage] = usePage();
+  const [, setPage] = usePage();
 
   const onClick = useCallback(() => {
     setPage("home");
@@ -295,7 +320,7 @@ const GoToHome = (): JSX.Element => {
       className="font-[Inter] uppercase text-[#8dd5ff] text-md text-center tracking-wider font-bold bg-boffwhiteandblue rounded-lg relative group min-h-[2rem] flex items-center justify-center px-2"
     >
       <div className="absolute inset-0 rounded-lg bg-bblue/[0.4] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
-      <span>Home</span>
+      <span>Explore</span>
     </button>
   );
 };
@@ -375,37 +400,37 @@ const PaymentHistory = (): JSX.Element => {
         </div>
       </div>
 
-        <Dialog
-          open={withdrawFlow.state === 'open'}
-          as="div"
-          className="absolute inset-0 flex justify-center items-center overflow-hidden"
-          onClose={withdrawFlow.close}
-        >
-          <div className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-[22.5rem] h-full top-0 bottom-0 max-h-full flex items-center justify-center">
-            <WalkthroughCard height="auto">
-              <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2 text-center">
-                Success!
-              </Dialog.Title>
+      <Dialog
+        open={withdrawFlow.state === "open"}
+        as="div"
+        className="absolute inset-0 flex justify-center items-center overflow-hidden"
+        onClose={withdrawFlow.close}
+      >
+        <div className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-[22.5rem] h-full top-0 bottom-0 max-h-full flex items-center justify-center">
+          <WalkthroughCard height="auto">
+            <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2 text-center">
+              Success!
+            </Dialog.Title>
 
-              <div className="font-[Inter] max-w-xs text-blue-50 font-semibold px-5 py-10 text-center">
-                You have completed the withdrawal.
-              </div>
+            <div className="font-[Inter] max-w-xs text-blue-50 font-semibold px-5 py-10 text-center">
+              You have completed the withdrawal.
+            </div>
 
-              <button
-                onClick={withdrawFlow.close}
-                className="block font-[Inter] uppercase text-boffwhite border border-boffwhite rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group cursor-pointer mb-10"
-              >
-                <div className="absolute inset-0 rounded-xl bg-boffwhite/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
-                <span>Close</span>
-              </button>
-            </WalkthroughCard>
-          </div>
+            <button
+              onClick={withdrawFlow.close}
+              className="block font-[Inter] uppercase text-boffwhite border border-boffwhite rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group cursor-pointer mb-10"
+            >
+              <div className="absolute inset-0 rounded-xl bg-boffwhite/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+              <span>Close</span>
+            </button>
+          </WalkthroughCard>
+        </div>
 
-          <div
-            onClick={withdrawFlow.close}
-            className="fixed inset-0 bg-blue-900/[0.1] z-0"
-          />
-        </Dialog>
+        <div
+          onClick={withdrawFlow.close}
+          className="fixed inset-0 bg-blue-900/[0.1] z-0"
+        />
+      </Dialog>
     </>
   );
 };
@@ -671,7 +696,7 @@ const Content = (): JSX.Element => {
   const [page] = usePage();
 
   if (signedIn === "google") {
-    if (page == "payment-history") {
+    if (page === "payment-history") {
       return <PaymentHistory />;
     }
 
