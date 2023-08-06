@@ -1,3 +1,4 @@
+import cx from "classnames";
 import "./App.css";
 import {
   BooleanParam,
@@ -11,6 +12,10 @@ import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 import { useCallback, useRef, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
+
+const usePage = () => useQueryParam("page", StringParam);
+
+const useExplorerMode = () => useQueryParam("em", StringParam);
 
 const WalkthroughCard = (props: {
   children: React.ReactNode;
@@ -96,21 +101,6 @@ const WithdrawalsHeader = (): JSX.Element => {
       {/* subheading */}
       <div className="text-md text-bblue/[0.75] font-medium">
         Sign in with PayPal below to begin.
-      </div>
-    </div>
-  );
-};
-
-const AssetsHeader = (): JSX.Element => {
-  return (
-    <div className="w-full rounded-t-2xl py-8 flex flex-col gap-y-2">
-      <div className="text-3xl font-bold font-[Inter] text-bdarkblue leading-none tracking-wide">
-        Simulations
-      </div>
-
-      {/* subheading */}
-      <div className="text-md text-bblue/[0.75] font-medium">
-        Select a simulation below to begin.
       </div>
     </div>
   );
@@ -247,25 +237,149 @@ const AssetPlaceholder = (): JSX.Element => {
   );
 };
 
-const AssetSelection = (): JSX.Element => {
+const ExplorerModeSelector = (): JSX.Element => {
+  const [explorerMode, setExplorerMode] = useExplorerMode();
+
+  const handleStackClick = useCallback(() => {
+    setExplorerMode("stack");
+  }, [setExplorerMode]);
+
+  const handleCardClick = useCallback(() => {
+    setExplorerMode("card");
+  }, [setExplorerMode]);
+
+  const iconClassName = "w-8 h-8";
+
+  const rowsIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className={iconClassName}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 004.5 9v.878m13.5-3A2.25 2.25 0 0119.5 9v.878m0 0a2.246 2.246 0 00-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0121 12v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6c0-.98.626-1.813 1.5-2.122"
+      />
+    </svg>
+  );
+
+  const stackIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className={iconClassName}
+    >
+      <path
+        fillRule="evenodd"
+        d="M6 4.75A.75.75 0 016.75 4h10.5a.75.75 0 010 1.5H6.75A.75.75 0 016 4.75zM6 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H6.75A.75.75 0 016 10zm0 5.25a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H6.75a.75.75 0 01-.75-.75zM1.99 4.75a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1v-.01zM1.99 15.25a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1v-.01zM1.99 10a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1V10z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+
+  return (
+    <div className="mb-10">
+      <button
+        onClick={handleCardClick}
+        className={cx(
+          "inline-block border-b-4 p-2",
+          explorerMode !== "stack"
+            ? "border-bblack text-bblack"
+            : "text-bblack/[0.5] border-transparent p-2"
+        )}
+      >
+        {rowsIcon}
+      </button>
+
+      <button
+        onClick={handleStackClick}
+        className={cx(
+          "inline-block border-b-4 p-2",
+          explorerMode === "stack"
+            ? "border-bblack text-bblack"
+            : "text-bblack/[0.5] border-transparent p-2"
+        )}
+      >
+        {stackIcon}
+      </button>
+    </div>
+  );
+};
+
+const SimulationListingEntry = (): JSX.Element => {
   return (
     <>
-      <div className="max-w-md mx-auto w-full border border-bblue/[0.5] pb-5 px-5 rounded-2xl">
-        <AssetsHeader />
-        <div className="flex flex-col gap-y-2.5">
-          <AssetPlaceholder />
-          <AssetPlaceholder />
-          <AssetPlaceholder />
+      <div className="flex flex-col gap-y-5">
+        <div
+          style={{
+            backgroundImage: ` url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M81.28 88H68.413l19.298 19.298L81.28 88zm2.107 0h13.226L90 107.838 83.387 88zm15.334 0h12.866l-19.298 19.298L98.72 88zm-32.927-2.207L73.586 78h32.827l.5.5 7.294 7.293L115.414 87l-24.707 24.707-.707.707L64.586 87l1.207-1.207zm2.62.207L74 80.414 79.586 86H68.414zm16 0L90 80.414 95.586 86H84.414zm16 0L106 80.414 111.586 86h-11.172zm-8-6h11.173L98 85.586 92.414 80zM82 85.586L87.586 80H76.414L82 85.586zM17.414 0L.707 16.707 0 17.414V0h17.414zM4.28 0L0 12.838V0h4.28zm10.306 0L2.288 12.298 6.388 0h8.198zM180 17.414L162.586 0H180v17.414zM165.414 0l12.298 12.298L173.612 0h-8.198zM180 12.838L175.72 0H180v12.838zM0 163h16.413l.5.5 7.294 7.293L25.414 172l-8 8H0v-17zm0 10h6.613l-2.334 7H0v-7zm14.586 7l7-7H8.72l-2.333 7h8.2zM0 165.414L5.586 171H0v-5.586zM10.414 171L16 165.414 21.586 171H10.414zm-8-6h11.172L8 170.586 2.414 165zM180 163h-16.413l-7.794 7.793-1.207 1.207 8 8H180v-17zm-14.586 17l-7-7h12.865l2.333 7h-8.2zM180 173h-6.613l2.334 7H180v-7zm-21.586-2l5.586-5.586 5.586 5.586h-11.172zM180 165.414L174.414 171H180v-5.586zm-8 5.172l5.586-5.586h-11.172l5.586 5.586zM152.933 25.653l1.414 1.414-33.94 33.942-1.416-1.416 33.943-33.94zm1.414 127.28l-1.414 1.414-33.942-33.94 1.416-1.416 33.94 33.943zm-127.28 1.414l-1.414-1.414 33.94-33.942 1.416 1.416-33.943 33.94zm-1.414-127.28l1.414-1.414 33.942 33.94-1.416 1.416-33.94-33.943zM0 85c2.21 0 4 1.79 4 4s-1.79 4-4 4v-8zm180 0c-2.21 0-4 1.79-4 4s1.79 4 4 4v-8zM94 0c0 2.21-1.79 4-4 4s-4-1.79-4-4h8zm0 180c0-2.21-1.79-4-4-4s-4 1.79-4 4h8z' fill='%231a3f70' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+          }}
+          className="w-full aspect-square rounded-xl bg-boffwhiteandblue"
+        ></div>
+        <div className="grow flex flex-col gap-y-1.5 -mb-2">
+          <div className="h-2 rounded-md w-[60%] bg-blue-100"></div>
+          <div className="h-2 rounded-md w-[35%] bg-blue-100/[0.75]"></div>
+          <div className="flex gap-1 items-center text-bblue/[0.75] mt-1">
+
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+</svg>
+          <div className="font-[Inter] font-light leading-none">45m</div>
+          </div>
+        </div>
+        <div className="flex gap-1 items-end">
+          <span className="text-bdarkblue font-bold text-xl leading-none flex items-start">
+            <span style={{ fontSize: "0.8em" }} className="translate-y-0.5">
+              $
+            </span>
+            <span>50</span>
+          </span>
+
+          <span className="text-bblue/[0.75] leading-none font-light">
+            /month
+          </span>
         </div>
       </div>
     </>
   );
 };
 
-const usePage = () => useQueryParam("page", StringParam);
+const AssetSelection = (): JSX.Element => {
+  const [explorerMode] = useExplorerMode();
+
+  return (
+    <>
+      <div className="max-w-md mx-auto w-full pb-5 rounded-2xl px-2">
+        <ExplorerModeSelector />
+
+        {explorerMode === "stack" ? (
+          <div className="flex flex-col gap-y-2.5">
+            <AssetPlaceholder />
+            <AssetPlaceholder />
+            <AssetPlaceholder />
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-y-12">
+
+            <SimulationListingEntry />
+            <SimulationListingEntry />
+            <SimulationListingEntry />
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  );
+};
 
 const GoToPaymentHistory = (): JSX.Element => {
-  const [page, setPage] = usePage();
+  const [, setPage] = usePage();
 
   const onClick = useCallback(() => {
     setPage("payment-history");
@@ -283,7 +397,7 @@ const GoToPaymentHistory = (): JSX.Element => {
 };
 
 const GoToHome = (): JSX.Element => {
-  const [page, setPage] = usePage();
+  const [, setPage] = usePage();
 
   const onClick = useCallback(() => {
     setPage("home");
@@ -295,7 +409,7 @@ const GoToHome = (): JSX.Element => {
       className="font-[Inter] uppercase text-[#8dd5ff] text-md text-center tracking-wider font-bold bg-boffwhiteandblue rounded-lg relative group min-h-[2rem] flex items-center justify-center px-2"
     >
       <div className="absolute inset-0 rounded-lg bg-bblue/[0.4] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
-      <span>Home</span>
+      <span>Explore</span>
     </button>
   );
 };
@@ -343,7 +457,7 @@ const PaymentHistory = (): JSX.Element => {
 
   return (
     <>
-      <div className="h-full relative p-2 flex flex-col items-stretch justify-start bg-blue-100/[0.8] gap-y-10">
+      <div className="h-min min-h-full relative p-2 flex flex-col items-stretch justify-start bg-blue-100/[0.8] gap-y-10">
         <Header />
 
         <div className="max-w-md mx-auto w-full pb-5 px-5 rounded-2xl bg-boffwhite shadow-sm">
@@ -375,37 +489,37 @@ const PaymentHistory = (): JSX.Element => {
         </div>
       </div>
 
-        <Dialog
-          open={withdrawFlow.state === 'open'}
-          as="div"
-          className="absolute inset-0 flex justify-center items-center overflow-hidden"
-          onClose={withdrawFlow.close}
-        >
-          <div className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-[22.5rem] h-full top-0 bottom-0 max-h-full flex items-center justify-center">
-            <WalkthroughCard height="auto">
-              <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2 text-center">
-                Success!
-              </Dialog.Title>
+      <Dialog
+        open={withdrawFlow.state === "open"}
+        as="div"
+        className="absolute inset-0 flex justify-center items-center overflow-hidden"
+        onClose={withdrawFlow.close}
+      >
+        <div className="absolute -left-1/2 -right-1/2 mx-auto w-full max-w-[22.5rem] h-full top-0 bottom-0 max-h-full flex items-center justify-center">
+          <WalkthroughCard height="auto">
+            <Dialog.Title className="font-[Inter] max-w-xs text-blue-50 text-2xl font-black tracking-normal px-5 py-10 -my-2 text-center">
+              Success!
+            </Dialog.Title>
 
-              <div className="font-[Inter] max-w-xs text-blue-50 font-semibold px-5 py-10 text-center">
-                You have completed the withdrawal.
-              </div>
+            <div className="font-[Inter] max-w-xs text-blue-50 font-semibold px-5 py-10 text-center">
+              You have completed the withdrawal.
+            </div>
 
-              <button
-                onClick={withdrawFlow.close}
-                className="block font-[Inter] uppercase text-boffwhite border border-boffwhite rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group cursor-pointer mb-10"
-              >
-                <div className="absolute inset-0 rounded-xl bg-boffwhite/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
-                <span>Close</span>
-              </button>
-            </WalkthroughCard>
-          </div>
+            <button
+              onClick={withdrawFlow.close}
+              className="block font-[Inter] uppercase text-boffwhite border border-boffwhite rounded-xl px-4 py-3 text-center tracking-wider font-bold relative group cursor-pointer mb-10"
+            >
+              <div className="absolute inset-0 rounded-xl bg-boffwhite/[0.2] opacity-0 group-hover:opacity-50 group-active:opacity-100 h-full w-full z-10"></div>
+              <span>Close</span>
+            </button>
+          </WalkthroughCard>
+        </div>
 
-          <div
-            onClick={withdrawFlow.close}
-            className="fixed inset-0 bg-blue-900/[0.1] z-0"
-          />
-        </Dialog>
+        <div
+          onClick={withdrawFlow.close}
+          className="fixed inset-0 bg-blue-900/[0.1] z-0"
+        />
+      </Dialog>
     </>
   );
 };
@@ -558,9 +672,16 @@ const Home = (): JSX.Element => {
     setSimulatorState("closed");
   }, [setSimulatorState]);
 
+  const [explorerMode] = useExplorerMode();
+
   return (
     <>
-      <div className="h-full relative p-2 flex flex-col items-stretch justify-start bg-blue-100/[0.8] gap-y-10">
+      <div
+        className={cx(
+          "h-min min-h-full relative p-2 flex flex-col items-stretch justify-start gap-y-10",
+          explorerMode === "stack" ? "bg-blue-100/[0.8]" : "bg-blue-100/[0.4]"
+        )}
+      >
         <Header />
 
         <AssetSelection />
@@ -671,7 +792,7 @@ const Content = (): JSX.Element => {
   const [page] = usePage();
 
   if (signedIn === "google") {
-    if (page == "payment-history") {
+    if (page === "payment-history") {
       return <PaymentHistory />;
     }
 
