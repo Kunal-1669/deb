@@ -366,29 +366,37 @@ const SimulationListingEntry = (): JSX.Element => {
 };
 
 const ExplorerSearchBar = (): JSX.Element => {
+  const [, setExplorerMode] = useExplorerMode();
+
+  const handleClick = useCallback(() => {
+    setExplorerMode("search");
+  }, [setExplorerMode]);
+
   return (
     <div className="rounded-full p-2 flex gap-2 items-center bg-[#fafaff] text-bblue/[0.5] shadow-xl">
       <div className="p-1">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        className="w-4 h-4"
-      >
-        <path
-          fillRule="evenodd"
-          d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-          clipRule="evenodd"
-        />
-      </svg>
-
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          className="w-4 h-4"
+        >
+          <path
+            fillRule="evenodd"
+            d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+            clipRule="evenodd"
+          />
+        </svg>
       </div>
 
       <span className="text-bblue/[0.5] leading-none font-semibold grow text-[1.1em] select-none">
         Search simulations
       </span>
 
-      <button className="bg-bblue/[0.1] rounded-full p-2 hover:opacity-75 active:opacity-50">
+      <button
+        onClick={handleClick}
+        className="bg-bblue/[0.1] rounded-full p-2 hover:opacity-75 active:opacity-50"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
@@ -732,7 +740,11 @@ const Home = (): JSX.Element => {
     setSimulatorState("completed");
   }, [setSimulatorState]);
 
-  const [explorerMode] = useExplorerMode();
+  const [explorerMode, setExplorerMode] = useExplorerMode();
+
+  const exitSearch = useCallback(() => {
+    setExplorerMode("card");
+  }, [setExplorerMode]);
 
   return (
     <>
@@ -847,6 +859,67 @@ const Home = (): JSX.Element => {
                 >
                   <div className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-50 bg-blue-900/[0.5] group-active:opacity-100 z-10"></div>
                   <span>Start</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </Dialog>
+
+        <Dialog
+          open={explorerMode === "search"}
+          as="div"
+          className="absolute inset-0 flex justify-center items-center overflow-hidden"
+          initialFocus={stepButtonRefs[walkthroughStep ?? 0]}
+          onClose={exitSearch}
+        >
+          <div className="fixed inset-0 h-min min-h-full bg-boffwhite flex flex-col justify-between">
+            <div className="w-full p-2">
+              <button
+                onClick={exitSearch}
+                className="rounded-full bg-[#fafaff] w-6 h-6 flex items-center justify-center text-bdarkblue/[0.5] relative group"
+              >
+                <div className="absolute inset-0 rounded-xl bg-blue-900/[0.3] opacity-0 group-hover:opacity-25 group-active:opacity-100 h-full w-full z-10"></div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-5 h-5 -translate-x-px"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="bg-[#fafaff] p-2 flex gap-2 shadow-sm select-none relative group justify-between items-start">
+              <div className="flex flex-col gap-y-0.5 items-start">
+                <div className="flex gap-1 items-center">
+                </div>
+              </div>
+              <div>
+                <button
+                  onClick={exitSearch}
+                  className="bg-blue-700 text-boffwhite font-bold font-[Inter] rounded-md px-5 py-3 leading-none relative group flex items-center gap-1"
+                >
+                  <div className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-50 bg-blue-900/[0.5] group-active:opacity-100 z-10"></div>
+                  <div className="p-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-4 h-4"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <span>Search</span>
                 </button>
               </div>
             </div>
