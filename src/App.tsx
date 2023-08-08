@@ -873,10 +873,10 @@ const Home = (): JSX.Element => {
           onClose={exitSearch}
         >
           <div className="fixed inset-0 h-min min-h-full bg-boffwhite flex flex-col justify-between">
-            <div className="w-full p-2">
+            <div className="w-full p-2 flex flex-col gap-y-5">
               <button
                 onClick={exitSearch}
-                className="rounded-full bg-[#fafaff] w-6 h-6 flex items-center justify-center text-bdarkblue/[0.5] relative group"
+                className="rounded-full bg-[#fafaff] w-6 h-6 flex items-center justify-center text-bdarkblue/[0.5] relative group shadow-sm"
               >
                 <div className="absolute inset-0 rounded-xl bg-blue-900/[0.3] opacity-0 group-hover:opacity-25 group-active:opacity-100 h-full w-full z-10"></div>
                 <svg
@@ -892,12 +892,78 @@ const Home = (): JSX.Element => {
                   />
                 </svg>
               </button>
+
+              <div className="rounded-full p-2 flex gap-2 items-center bg-[#fafaff] text-bblue/[0.5] shadow-sm">
+                <div className="p-1">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+
+                <span className="text-bblue/[0.5] leading-none font-semibold grow text-[1.1em] select-none">
+                  Search simulations
+                </span>
+              </div>
+              <div className="rounded-lg bg-[#fafaff]">
+                <div className="pb-5 border-b">
+                  <div className="text-bblue/[0.5] leading-none font-semibold grow text-[1.1em] select-none p-5">
+                    Data wage range
+                  </div>
+
+                  <div className="flex items-center justify-center w-full my-2">
+                    <div className="flex items-center justify-between w-[calc(100%-3rem)] bg-bdarkblue h-2 rounded-full">
+                      <div className="w-4 h-4 rounded-full bg-blue-400"></div>
+                      <div className="w-4 h-4 rounded-full bg-blue-400"></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-stretch divide-x">
+                  <div className="basis-0 grow flex flex-col gap-y-0.5 items-end py-4">
+                    <span className="font-light text-bblue/[0.8] text-center w-full">MIN</span>
+                    <span className="text-bblue/[0.8] font-medium text-2xl leading-none flex items-start w-full text-center flex justify-center">
+                      <span
+                        style={{ fontSize: "0.8em" }}
+                        className="translate-y-0.5"
+                      >
+                        $
+                      </span>
+                      <span>0</span>
+                    </span>
+                    <span className="text-bblue/[0.75] leading-none font-light w-full text-center">
+                      per month
+                    </span>
+                  </div>
+                  <div className="basis-0 grow flex flex-col gap-y-0.5 items-end py-4">
+                    <span className="font-light text-bblue/[0.8] text-center w-full">MAX</span>
+                    <span className="text-bblue/[0.8] font-medium text-2xl leading-none flex items-start w-full flex justify-center">
+                      <span
+                        style={{ fontSize: "0.8em" }}
+                        className="translate-y-0.5"
+                      >
+                        $
+                      </span>
+                      <span>350</span>
+                    </span>
+                    <span className="text-bblue/[0.75] leading-none font-light w-full text-center">
+                      per month
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="bg-[#fafaff] p-2 flex gap-2 shadow-sm select-none relative group justify-between items-start">
               <div className="flex flex-col gap-y-0.5 items-start">
-                <div className="flex gap-1 items-center">
-                </div>
+                <div className="flex gap-1 items-center"></div>
               </div>
               <div>
                 <button
