@@ -325,11 +325,11 @@ const SimulationListingEntry = (): JSX.Element => {
           style={{
             backgroundImage: ` url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M81.28 88H68.413l19.298 19.298L81.28 88zm2.107 0h13.226L90 107.838 83.387 88zm15.334 0h12.866l-19.298 19.298L98.72 88zm-32.927-2.207L73.586 78h32.827l.5.5 7.294 7.293L115.414 87l-24.707 24.707-.707.707L64.586 87l1.207-1.207zm2.62.207L74 80.414 79.586 86H68.414zm16 0L90 80.414 95.586 86H84.414zm16 0L106 80.414 111.586 86h-11.172zm-8-6h11.173L98 85.586 92.414 80zM82 85.586L87.586 80H76.414L82 85.586zM17.414 0L.707 16.707 0 17.414V0h17.414zM4.28 0L0 12.838V0h4.28zm10.306 0L2.288 12.298 6.388 0h8.198zM180 17.414L162.586 0H180v17.414zM165.414 0l12.298 12.298L173.612 0h-8.198zM180 12.838L175.72 0H180v12.838zM0 163h16.413l.5.5 7.294 7.293L25.414 172l-8 8H0v-17zm0 10h6.613l-2.334 7H0v-7zm14.586 7l7-7H8.72l-2.333 7h8.2zM0 165.414L5.586 171H0v-5.586zM10.414 171L16 165.414 21.586 171H10.414zm-8-6h11.172L8 170.586 2.414 165zM180 163h-16.413l-7.794 7.793-1.207 1.207 8 8H180v-17zm-14.586 17l-7-7h12.865l2.333 7h-8.2zM180 173h-6.613l2.334 7H180v-7zm-21.586-2l5.586-5.586 5.586 5.586h-11.172zM180 165.414L174.414 171H180v-5.586zm-8 5.172l5.586-5.586h-11.172l5.586 5.586zM152.933 25.653l1.414 1.414-33.94 33.942-1.416-1.416 33.943-33.94zm1.414 127.28l-1.414 1.414-33.942-33.94 1.416-1.416 33.94 33.943zm-127.28 1.414l-1.414-1.414 33.94-33.942 1.416 1.416-33.943 33.94zm-1.414-127.28l1.414-1.414 33.942 33.94-1.416 1.416-33.94-33.943zM0 85c2.21 0 4 1.79 4 4s-1.79 4-4 4v-8zm180 0c-2.21 0-4 1.79-4 4s1.79 4 4 4v-8zM94 0c0 2.21-1.79 4-4 4s-4-1.79-4-4h8zm0 180c0-2.21-1.79-4-4-4s-4 1.79-4 4h8z' fill='%231a3f70' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")`,
           }}
-          className="w-full aspect-square rounded-xl bg-boffwhiteandblue"
+          className="w-full aspect-square rounded-xl bg-boffwhiteandblue shadow-sm"
         ></div>
         <div className="grow flex flex-col gap-y-1.5 -mb-2">
-          <div className="h-2 rounded-md w-[60%] bg-blue-100"></div>
-          <div className="h-2 rounded-md w-[35%] bg-blue-100/[0.75]"></div>
+          <div className="h-2 rounded-md w-[60%] bg-blue-100 shadow-sm"></div>
+          <div className="h-2 rounded-md w-[35%] bg-blue-100/[0.75] shadow-sm"></div>
           <div className="flex gap-1 items-center text-bblue/[0.75] mt-1">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -365,13 +365,54 @@ const SimulationListingEntry = (): JSX.Element => {
   );
 };
 
+const ExplorerSearchBar = (): JSX.Element => {
+  return (
+    <div className="rounded-full p-2 flex gap-2 items-center bg-[#fafaff] text-bblue/[0.5] shadow-xl">
+      <div className="p-1">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        className="w-4 h-4"
+      >
+        <path
+          fillRule="evenodd"
+          d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+          clipRule="evenodd"
+        />
+      </svg>
+
+      </div>
+
+      <span className="text-bblue/[0.5] leading-none font-semibold grow text-[1.1em] select-none">
+        Search simulations
+      </span>
+
+      <button className="bg-bblue/[0.1] rounded-full p-2 hover:opacity-75 active:opacity-50">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          className="w-4 h-4"
+        >
+          <path d="M10 3.75a2 2 0 10-4 0 2 2 0 004 0zM17.25 4.5a.75.75 0 000-1.5h-5.5a.75.75 0 000 1.5h5.5zM5 3.75a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 01.75.75zM4.25 17a.75.75 0 000-1.5h-1.5a.75.75 0 000 1.5h1.5zM17.25 17a.75.75 0 000-1.5h-5.5a.75.75 0 000 1.5h5.5zM9 10a.75.75 0 01-.75.75h-5.5a.75.75 0 010-1.5h5.5A.75.75 0 019 10zM17.25 10.75a.75.75 0 000-1.5h-1.5a.75.75 0 000 1.5h1.5zM14 10a2 2 0 10-4 0 2 2 0 004 0zM10 16.25a2 2 0 10-4 0 2 2 0 004 0z" />
+        </svg>
+      </button>
+    </div>
+  );
+};
+
 const AssetSelection = (): JSX.Element => {
   const [explorerMode] = useExplorerMode();
 
   return (
     <>
       <div className="max-w-md mx-auto w-full pb-5 rounded-2xl px-2">
-        <ExplorerModeSelector />
+        <div className="flex flex-col gap-y-10">
+          <ExplorerSearchBar />
+
+          <ExplorerModeSelector />
+        </div>
 
         {explorerMode === "stack" ? (
           <div className="flex flex-col gap-y-2.5">
@@ -762,7 +803,10 @@ const Home = (): JSX.Element => {
               }}
               className="w-full aspect-video bg-boffwhiteandblue p-2"
             >
-              <button onClick={stopSimulation} className="rounded-full bg-[#fefeff] w-6 h-6 flex items-center justify-center text-bdarkblue/[0.5] relative group">
+              <button
+                onClick={stopSimulation}
+                className="rounded-full bg-[#fafaff] w-6 h-6 flex items-center justify-center text-bdarkblue/[0.5] relative group"
+              >
                 <div className="absolute inset-0 rounded-xl bg-blue-900/[0.3] opacity-0 group-hover:opacity-25 group-active:opacity-100 h-full w-full z-10"></div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
