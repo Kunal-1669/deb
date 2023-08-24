@@ -1,6 +1,7 @@
 import cx from "classnames";
 import "./App.css";
 import {
+  ArrayParam,
   BooleanParam,
   NumberParam,
   QueryParamProvider,
@@ -16,6 +17,50 @@ import { motion, AnimatePresence, useDragControls } from "framer-motion";
 const usePage = () => useQueryParam("page", StringParam);
 
 const useExplorerMode = () => useQueryParam("em", StringParam);
+
+const useCategory = (name: string) => {
+  const [selectedCategories, setSelectedCategories] = useQueryParam(
+    "sc",
+    ArrayParam
+  );
+
+  const enabled = selectedCategories?.includes(name);
+
+  const toggle = useCallback(() => {
+    if (enabled) {
+      setSelectedCategories(
+        (selectedCategories ?? []).filter((c) => c !== name)
+      );
+    } else {
+      setSelectedCategories([...(selectedCategories ?? []), name]);
+    }
+  }, [name, selectedCategories, enabled, setSelectedCategories]);
+
+  return { enabled, toggle };
+};
+
+const CategoryOption = (props: { label: string }) => {
+  const category = useCategory(props.label.toLowerCase())
+
+  return (
+    <button onClick={category.toggle} className="flex flex-col gap-y-1 cursor-pointer">
+      <div className="w-16 h-16 rounded-xl bg-[#fafaff]">
+        {category.enabled && (
+        <div className="text-green-600 p-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+</svg>
+        </div>
+        )}
+
+      </div>
+
+      <div className="text-bblue/[0.5] tracking-wide font-medium text-center leading-none text-[0.5rem] w-full">
+        {props.label}
+      </div>
+    </button>
+  );
+};
 
 const WalkthroughCard = (props: {
   children: React.ReactNode;
@@ -913,6 +958,18 @@ const Home = (): JSX.Element => {
                   Search simulations
                 </span>
               </div>
+
+              <div className="inline-flex justify-start items-center gap-4 flex-wrap">
+                <CategoryOption label="WORK" />
+                <CategoryOption label="SOCIAL" />
+                <CategoryOption label="PERSONAL" />
+                <CategoryOption label="HEALTH" />
+                <CategoryOption label="CIVIC" />
+                <CategoryOption label="RETAIL" />
+                <CategoryOption label="EDUCATION" />
+                <CategoryOption label="TRAVEL" />
+              </div>
+
               <div className="rounded-lg bg-[#fafaff]">
                 <div className="pb-5 border-b">
                   <div className="text-bblue/[0.5] leading-none font-semibold grow text-[1.1em] select-none p-5">
@@ -928,7 +985,10 @@ const Home = (): JSX.Element => {
                 </div>
                 <div className="flex justify-stretch divide-x">
                   <div className="basis-0 grow flex flex-col gap-y-0.5 items-end py-4">
-                    <span className="font-light text-bblue/[0.8] text-center w-full">MIN</span>
+                    <span className="font-light text-bblue/[0.8] text-center w-full">
+                      MIN
+                    </span>
+
                     <span className="text-bblue/[0.8] font-medium text-2xl leading-none flex items-start w-full text-center flex justify-center">
                       <span
                         style={{ fontSize: "0.8em" }}
@@ -943,7 +1003,9 @@ const Home = (): JSX.Element => {
                     </span>
                   </div>
                   <div className="basis-0 grow flex flex-col gap-y-0.5 items-end py-4">
-                    <span className="font-light text-bblue/[0.8] text-center w-full">MAX</span>
+                    <span className="font-light text-bblue/[0.8] text-center w-full">
+                      MAX
+                    </span>
                     <span className="text-bblue/[0.8] font-medium text-2xl leading-none flex items-start w-full flex justify-center">
                       <span
                         style={{ fontSize: "0.8em" }}
